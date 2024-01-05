@@ -12,8 +12,8 @@ class EuclideanMetric : Metric {
      */
     override fun distance(x: PointAbstract<*>, y: PointAbstract<*>): Double {
         return sqrt(
-            x.position.indices.sumOf {
-                (x.position[it] - y.position[it]) * (x.position[it] - y.position[it])
+            x.absolute.indices.sumOf {
+                (x.absolute[it] - y.absolute[it]) * (x.absolute[it] - y.absolute[it])
             }
         )
     }

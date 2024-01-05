@@ -11,8 +11,8 @@ class UniformMetric : Metric {
      * @return the uniform distance from [x] to [y].
      */
     override fun distance(x: PointAbstract<*>, y: PointAbstract<*>): Double {
-        return x.position.indices.maxOf {
-            abs(x.position[it] - y.position[it])
+        return x.absolute.indices.maxOf {
+            abs(x.absolute[it] - y.absolute[it])
         }
     }
 }
