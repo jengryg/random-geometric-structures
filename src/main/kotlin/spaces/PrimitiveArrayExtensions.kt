@@ -35,3 +35,21 @@ operator fun DoubleArray.minus(other: IntArray): DoubleArray {
         this[it] - other[it]
     }
 }
+
+/**
+ * [IntArray] + [IntArray] component wise calculated, i.e. vector addition.
+ */
+operator fun IntArray.plus(other: IntArray): IntArray {
+    return IntArray(this.size) {
+        this[it] + other[it]
+    }
+}
+
+/**
+ * [IntArray] - [IntArray] component wise calculated, i.e. vector subtractions.
+ */
+operator fun IntArray.minus(other: IntArray): IntArray {
+    return IntArray(this.size) {
+        this[it] - other[it]
+    }
+}

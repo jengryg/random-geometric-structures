@@ -1,5 +1,6 @@
 package ppp.segmentation
 
+import spaces.CombinatoricsGenerator
 import spaces.minus
 import spaces.plus
 import spaces.spaces.Space
@@ -51,5 +52,25 @@ class Segment(
         }
 
         return true
+    }
+
+    /**
+     * Construct the cluster by taking the [basePosition] of this segment and find all other segments of the
+     * [segmentation] that have a [basePosition] that is at most [expand] far away.
+     *
+     * This is achieved by calculating the position given by
+     */
+    fun neighborhood(expand: Int = 1): Cluster {
+        val expandArray = IntArray(dimension) { expand }
+
+        return Cluster(
+            segmentation = segmentation,
+            segments = CombinatoricsGenerator.lattice(
+                lowerCorner = basePosition - expandArray,
+                upperCorner = basePosition + expandArray
+            ).mapNotNull {
+                segmentation.segments[it]
+            }
+        )
     }
 }
