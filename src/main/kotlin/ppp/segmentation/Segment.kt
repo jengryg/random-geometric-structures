@@ -16,6 +16,11 @@ class Segment(
     val basePosition: IntArray,
 ) : Space by segmentation {
     /**
+     * The midpoint of the cube that this Segment represents, i.e. [basePosition] + (0.5, ... , 0.5).
+     */
+    val midpoint: DoubleArray = DoubleArray(dimension) { 0.5 } + basePosition
+
+    /**
      * Add the [basePosition] of this segment to the [relative] position to get the absolute position.
      *
      * @param relative the coordinates relative to the [basePosition] of this segment
