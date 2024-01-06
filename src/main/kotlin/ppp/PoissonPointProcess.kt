@@ -48,9 +48,10 @@ class PoissonPointProcess(
     val rejectedPoints: MutableMap<Int, SegmentationPoint> = mutableMapOf()
 
     /**
-     * All [PoissonSegment] used in the construction of this [PoissonPointProcess].
+     * All [PoissonSegment] used in the construction of this [PoissonPointProcess] indexed by their [Segment]
+     * using the base [Segment.basePosition] as key.
      */
-    val segments: MutableMap<Segment, PoissonSegment> = mutableMapOf()
+    val segments: MutableMap<String, PoissonSegment> = mutableMapOf()
 
     private fun reset() {
         allPoints.clear()
@@ -80,7 +81,7 @@ class PoissonPointProcess(
                 .addKeyValue("firstPointId", pointIdSequence)
                 .log()
 
-            segments[it] = PoissonSegment(
+            segments[it.basePosition.contentToString()] = PoissonSegment(
                 segment = it,
                 intensity = distribution.mean,
                 numberOfPoints = numberOfPoints,

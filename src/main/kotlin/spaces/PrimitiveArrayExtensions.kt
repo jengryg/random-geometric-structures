@@ -53,3 +53,10 @@ operator fun IntArray.minus(other: IntArray): IntArray {
         this[it] - other[it]
     }
 }
+
+/**
+ * [IntArray] to [DoubleArray] component wise using [Int.toDouble].
+ */
+fun IntArray.toDoubleArray(): DoubleArray {
+    return DoubleArray(this.size) { this[it].toDouble() }
+}

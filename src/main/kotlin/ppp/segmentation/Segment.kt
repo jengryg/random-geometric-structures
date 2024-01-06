@@ -1,5 +1,7 @@
 package ppp.segmentation
 
+import Logging
+import logger
 import spaces.CombinatoricsGenerator
 import spaces.minus
 import spaces.plus
@@ -14,7 +16,10 @@ import spaces.spaces.Space
 class Segment(
     val segmentation: Segmentation,
     val basePosition: IntArray,
-) : Space by segmentation {
+) : Space by segmentation, Logging {
+
+    private val log = logger()
+
     /**
      * The midpoint of the cube that this Segment represents, i.e. [basePosition] + (0.5, ... , 0.5).
      */
@@ -59,6 +64,9 @@ class Segment(
         return true
     }
 
+    // TODO remove IntArray as Mapping Keys. Different instances of same content create different entries in map.
+    // We need to translate this to a better key like String.
+
     /**
      * Construct the cluster by taking the [basePosition] of this segment and find all other segments of the
      * [segmentation] that have a [basePosition] that is at most [expand] far away.
@@ -68,13 +76,22 @@ class Segment(
     fun neighborhood(expand: Int = 1): Cluster {
         val expandArray = IntArray(dimension) { expand }
 
+        val lattice = CombinatoricsGenerator.lattice(
+            lowerCorner = basePosition - expandArray,
+            upperCorner = basePosition + expandArray
+        ).also {
+            log.atTrace()
+                .addKeyValue("basePosition") { basePosition.contentToString() }
+                .addKeyValue("expandArray") { expandArray.contentToString() }
+                .addKeyValue("lattice") {
+                    it.map { it.contentToString() }
+                }.log("Cluster lattice created.")
+        }
+
         return Cluster(
             segmentation = segmentation,
-            segments = CombinatoricsGenerator.lattice(
-                lowerCorner = basePosition - expandArray,
-                upperCorner = basePosition + expandArray
-            ).mapNotNull {
-                segmentation.segments[it]
+            segments = lattice.mapNotNull {
+                segmentation.segments[it.contentToString()]
             }
         )
     }
