@@ -1,5 +1,7 @@
 package ppp.segmentation
 
+import Logging
+import logger
 import spaces.spaces.Space
 
 
@@ -10,7 +12,9 @@ import spaces.spaces.Space
 class Cluster(
     val segmentation: Segmentation,
     val segments: List<Segment>
-) : Space by segmentation {
+) : Space by segmentation, Logging {
+    private val log = logger()
+
     /**
      * Component wise minimum of the [Segment.basePosition] calculated over all [segments].
      * This is the lowest corner of the box that is formed by this cluster.
@@ -26,6 +30,15 @@ class Cluster(
     val upperBound = IntArray(dimension) { coordinateIndex ->
         segments.maxOf { it.basePosition[coordinateIndex] } + 1
         // We need to add 1 to the position to account for the size of the segment cube itself.
+    }
+
+    init {
+        log.atDebug()
+            .setMessage("Cluster created")
+            .addKeyValue("lowerBound", lowerBound.contentToString())
+            .addKeyValue("upperBound", upperBound.contentToString())
+            .addKeyValue("segmentCount", segments.size)
+            .log()
     }
 
     /**

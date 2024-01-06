@@ -1,5 +1,7 @@
 package ppp.segmentation
 
+import Logging
+import logger
 import spaces.CombinatoricsGenerator
 import spaces.spaces.SpaceAbstract
 
@@ -15,7 +17,9 @@ import spaces.spaces.SpaceAbstract
  */
 class Segmentation(
     val rangeLimits: Array<IntRange>,
-) : SpaceAbstract(rangeLimits.size) {
+) : SpaceAbstract(rangeLimits.size), Logging {
+    private val log = logger()
+
     /**
      * The segments that form the complete [Segmentation] defined by [rangeLimits].
      *
@@ -27,5 +31,10 @@ class Segmentation(
         rangeLimits = rangeLimits
     ).associateWith {
         Segment(segmentation = this, basePosition = it)
+    }.also {
+        log.atDebug()
+            .setMessage("Segmentation Created")
+            .addKeyValue("segmentCount", it.size)
+            .log()
     }
 }
