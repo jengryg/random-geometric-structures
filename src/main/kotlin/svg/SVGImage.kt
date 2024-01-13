@@ -6,6 +6,7 @@ import logger
 import org.apache.batik.dom.GenericDOMImplementation
 import org.apache.batik.svggen.SVGGraphics2D
 import ppp.segmentation.Segmentation
+import sc.model.SimplexModel
 import spaces.spaces.PointAbstract
 import spaces.spaces.SpaceAbstract
 import java.awt.Color
@@ -15,6 +16,7 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.io.path.writer
 import kotlin.math.roundToInt
 
@@ -326,5 +328,36 @@ class SVGImage(
      */
     fun write(string: String, position: DoubleArray) {
         write(string = string, x = position[xIndex], y = position[yIndex])
+    }
+
+    /**
+     * Draw a polygon given by its [vertices].
+     *
+     * If [filled] is set to true, the polygon is filled with the current drawing color of the [svg],
+     * otherwise only the outline is drawn in that color and the shape itself is transparent.
+     */
+    fun polygon(vertices: List<DoubleArray>, filled: Boolean = true) {
+        if (vertices.size <= 2) {
+            throw IllegalArgumentException("Polygon required at least 3 vertices.")
+        }
+
+        val xPoints = vertices.map { pV(transformationX(it[xIndex])) }.toIntArray()
+        val yPoints = vertices.map { pV(transformationY(it[yIndex])) }.toIntArray()
+
+        if (filled) {
+            svg.fillPolygon(xPoints, yPoints, xPoints.size)
+        } else {
+            svg.drawPolygon(xPoints, yPoints, xPoints.size)
+        }
+    }
+
+    /**
+     * Draw a polygon given by the vertices of the [simplex].
+     *
+     * If [filled] is set to true, the polygon is filled with the current drawing color of the [svg],
+     * otherwise only the outline is drawn in that color and the shape itself is transparent.
+     */
+    fun simplex(simplex: SimplexModel, filled: Boolean = true) {
+        polygon(simplex.vertices.map { it.absolute }, filled)
     }
 }

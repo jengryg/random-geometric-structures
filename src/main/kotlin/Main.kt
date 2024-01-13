@@ -11,5 +11,6 @@ fun main(args: Array<String>) {
 
     runBlocking {
         ExampleFigureGeneration.examplePoissonPointProcessStepConstruction()
+        ExampleFigureGeneration.exampleVietorisRipsComplexStepConstruction()
     }
 }
