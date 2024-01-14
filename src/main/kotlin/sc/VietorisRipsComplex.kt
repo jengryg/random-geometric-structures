@@ -190,8 +190,6 @@ class VietorisRipsComplex(
         // Since this is shared between the coroutines that increment and use it below, we need AtomicInteger here:
         val simplexId = AtomicInteger(initialCounterValue)
 
-        val collection = simplexCollection(1)
-
         val generation = withContext(Dispatchers.Default) {
             pointsBySegment.map { (coreSegment, corePoints) ->
                 // Note: corePoints is already pre-sorted by id to simplify the handling of different permutations for
@@ -199,6 +197,8 @@ class VietorisRipsComplex(
                 async {
                     // We iterate over each segment since we can use the cluster extension to reduce the number of possible
                     // candidates that can form a simplex with the selected point.
+
+                    val collector = mutableListOf<SimplexModel>()
 
                     /**
                      * Get the list of points that can form an edge with the points from [coreSegment].
@@ -220,7 +220,7 @@ class VietorisRipsComplex(
                                 // ensures that x.id < y.id is always true.
                                 if (adjacencyMatrix.get(x, y)) {
                                     // If these vertices are adjacent, they form an edge, which is a 1-dimensional simplex.
-                                    collection.add(
+                                    collector.add(
                                         SimplexModel(
                                             id = simplexId.incrementAndGet(),
                                             vertices = listOf(x, y)
@@ -239,11 +239,16 @@ class VietorisRipsComplex(
                             }
                         }
                     }
+
+                    return@async collector
                 }
             }
         }
 
-        generation.awaitAll()
+        val collection = simplexCollection(1)
+        generation.awaitAll().forEach {
+            collection.addAll(it)
+        }
 
         log.atDebug()
             .setMessage("Generated Vietoris Rips")
@@ -264,7 +269,6 @@ class VietorisRipsComplex(
      */
     private suspend fun constructHigherDimensionalSimplicies(targetDimension: Int, initialCounterValue: Int): Int {
         val simplexId = AtomicInteger(initialCounterValue)
-        val collection = simplexCollection(targetDimension)
         val supply = simplexCollection(targetDimension - 1)
 
         val generation = withContext(Dispatchers.Default) {
@@ -275,6 +279,13 @@ class VietorisRipsComplex(
                     // We iterate over each segment since we can use the cluster extension to reduce the number of possible
                     // candidates that can form a simplex with the selected point.
 
+                    val collector = mutableListOf<SimplexModel>()
+
+                    /**
+                     * Get the list of simplicies that can form a larger simplex with the points from [coreSegment].
+                     * The usage of the [Segment] can reduce the amount of potential candidates greatly, depending on
+                     * the size of [delta] and the number of [Segment] the points are distributed across.
+                     */
                     val candidates = getCandidateSimpliciesForSegment(coreSegment, supply)
 
                     corePoints.forEach { p ->
@@ -282,7 +293,7 @@ class VietorisRipsComplex(
                             if (p.id < simplex.lowestVertexId && adjacencyMatrix.all(p, simplex.vertices)) {
                                 // The vertex is not part of the simplex already, and it is connected to each vertex of the
                                 // simplex.
-                                collection.add(
+                                collector.add(
                                     SimplexModel(
                                         id = simplexId.incrementAndGet(),
                                         vertices = mutableListOf(p).also { it.addAll(simplex.vertices) }.toList()
@@ -301,11 +312,16 @@ class VietorisRipsComplex(
                             }
                         }
                     }
+
+                    return@async collector
                 }
             }
         }
 
-        generation.awaitAll()
+        val collection = simplexCollection(targetDimension)
+        generation.awaitAll().forEach {
+            collection.addAll(it)
+        }
 
         log.atDebug()
             .setMessage("Generated Vietoris Rips")
