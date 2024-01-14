@@ -64,9 +64,6 @@ class Segment(
         return true
     }
 
-    // TODO remove IntArray as Mapping Keys. Different instances of same content create different entries in map.
-    // We need to translate this to a better key like String.
-
     /**
      * Construct the cluster by taking the [basePosition] of this segment and find all other segments of the
      * [segmentation] that have a [basePosition] that is at most [expand] far away.
