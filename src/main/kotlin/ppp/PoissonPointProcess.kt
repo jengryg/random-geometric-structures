@@ -19,7 +19,7 @@ import ppp.segmentation.SegmentationPoint
  *
  * @param segmentation the underlying [Segmentation] to use for the cube based construction
  *
- * @param countDistributionAssigner callable to assign a [PoissonPointProcess] to the given [Segment]
+ * @param countDistributionAssigner callable to assign a [PoissonDistribution] to the given [Segment]
  *
  * @param pointFilterAssigner callable to assign a [PointFilter] to the given [Segment]
  */

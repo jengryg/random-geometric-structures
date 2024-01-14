@@ -21,6 +21,11 @@ import kotlin.math.ceil
  * vertices using [delta] as distance limiting parameter and the [metric] to calculate the distance of two vertices.
  *
  * See [Vietoris-Rips Complex](https://en.wikipedia.org/wiki/Vietoris%E2%80%93Rips_complex) fore more information.
+ *
+ * @param vertices all vertices that can be used to construct the Vietoris-Rips complex
+ * @param metric the underlying metric that is used to check the distance between vertices
+ * @param delta the distance threshold, i.e. a set of vertices forms a simplex if and only if every pair of points has
+ * distance smaller than [delta].
  */
 class VietorisRipsComplex(
     vertices: List<SegmentationPoint>,
