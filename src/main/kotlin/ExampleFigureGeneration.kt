@@ -8,7 +8,7 @@ import sc.VietorisRipsComplex
 import spaces.metrics.EuclideanMetric
 
 object ExampleFigureGeneration {
-    suspend fun examplePoissonPointProcessStepConstruction() {
+    suspend fun poissonPointProcessStepConstruction() {
         val segmentation = Segmentation(
             rangeLimits = arrayOf(
                 (0..16), (0..9)
@@ -31,7 +31,7 @@ object ExampleFigureGeneration {
         ).constructFigure()
     }
 
-    suspend fun exampleVietorisRipsComplexStepConstruction() {
+    suspend fun vietorisRipsComplexStepConstruction() {
         val segmentation = Segmentation(
             rangeLimits = arrayOf(
                 (0..3), (0..3)

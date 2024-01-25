@@ -10,7 +10,7 @@ class PoissonPointProcessStepConstruction(
 ) {
     private val figures = Array(4) {
         SVGImage(
-            baseName = "${this::class.simpleName}",
+            baseName = "${this::class.simpleName}_$it",
             segmentation = poissonPointProcess.segmentation
         )
     }

@@ -17,4 +17,15 @@ class EuclideanMetric : Metric {
             }
         )
     }
+
+    /**
+     * @return the Euclidean length of [p].
+     */
+    override fun length(p: PointAbstract<*>): Double {
+        return sqrt(
+            p.absolute.indices.sumOf {
+                p.absolute[it] * p.absolute[it]
+            }
+        )
+    }
 }

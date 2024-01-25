@@ -17,8 +17,13 @@ class Segment(
     val segmentation: Segmentation,
     val basePosition: IntArray,
 ) : Space by segmentation, Logging {
-
     private val log = logger()
+
+    init {
+        assert(basePosition.size == dimension) {
+            "The given base position is of a different dimension than the segmentation dimension!"
+        }
+    }
 
     /**
      * The midpoint of the cube that this Segment represents, i.e. [basePosition] + (0.5, ... , 0.5).
@@ -70,7 +75,7 @@ class Segment(
      *
      * This is achieved by calculating the position given by
      */
-    fun neighborhood(expand: Int = 1): Cluster {
+    fun neighborhood(expand: Int): Cluster {
         val expandArray = IntArray(dimension) { expand }
 
         val lattice = CombinatoricsGenerator.lattice(

@@ -123,7 +123,7 @@ class SVGImage(
      */
     fun export(name: String? = null) {
         when {
-            name.isNullOrBlank() -> "${baseName}_${creationStamp}_${exportId++}_${UUID.randomUUID()}.svg"
+            name.isNullOrBlank() -> "${baseName}_${exportId++}_${creationStamp}_${UUID.randomUUID()}.svg"
             else -> "${name}.svg"
         }.let { fileName ->
             Path.of(OUTPUT_DIRECTORY, fileName)

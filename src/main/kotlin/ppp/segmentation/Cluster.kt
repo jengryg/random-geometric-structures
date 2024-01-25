@@ -19,17 +19,25 @@ class Cluster(
      * Component wise minimum of the [Segment.basePosition] calculated over all [segments].
      * This is the lowest corner of the box that is formed by this cluster.
      */
-    val lowerBound = IntArray(dimension) { coordinateIndex ->
-        segments.minOf { it.basePosition[coordinateIndex] }
+    val lowerBound = segments.let {
+        assert(segments.isNotEmpty()) { "Cluster must be created with at least one segment." }
+
+        IntArray(dimension) { coordinateIndex ->
+            it.minOf { it.basePosition[coordinateIndex] }
+        }
     }
 
     /**
      * Component wise maximum of the [Segment.basePosition] calculated over all [segments].
      * This is the highest corner of the box that is formed by this cluster.
      */
-    val upperBound = IntArray(dimension) { coordinateIndex ->
-        segments.maxOf { it.basePosition[coordinateIndex] } + 1
-        // We need to add 1 to the position to account for the size of the segment cube itself.
+    val upperBound = segments.let {
+        assert(segments.isNotEmpty()) { "Cluster must be created with at least one segment." }
+
+        IntArray(dimension) { coordinateIndex ->
+            segments.maxOf { it.basePosition[coordinateIndex] } + 1
+            // We need to add 1 to the position to account for the size of the segment cube itself.
+        }
     }
 
     init {

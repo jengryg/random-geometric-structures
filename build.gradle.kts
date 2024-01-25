@@ -1,6 +1,8 @@
 plugins {
     kotlin("jvm") version "1.9.21"
     application
+    idea
+    jacoco
 }
 
 group = "math.simulation"
@@ -28,15 +30,31 @@ dependencies {
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
+    testImplementation("org.assertj:assertj-core:3.25.2")
+    testImplementation("io.mockk:mockk:1.13.9")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
 kotlin {
     jvmToolchain(21)
 }
 
 application {
     mainClass.set("MainKt")
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+idea {
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
 }

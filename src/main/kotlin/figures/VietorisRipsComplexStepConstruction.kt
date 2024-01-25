@@ -11,7 +11,7 @@ class VietorisRipsComplexStepConstruction(
 
     private val figures = Array(5) {
         SVGImage(
-            baseName = "${this::class.simpleName}",
+            baseName = "${this::class.simpleName}_$it",
             segmentation = vietorisRipsComplex.segmentation
         )
     }

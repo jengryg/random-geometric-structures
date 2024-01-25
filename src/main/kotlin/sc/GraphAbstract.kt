@@ -7,6 +7,8 @@ import spaces.spaces.Space
 
 /**
  * A [GraphAbstract] is a simple base class used to ensure that some basic properties are available.
+ *
+ * @param vertices the list of vertices of this graph.
  */
 abstract class GraphAbstract(
     val vertices: List<SegmentationPoint>

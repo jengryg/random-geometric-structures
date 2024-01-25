@@ -4,6 +4,7 @@ import Logging
 import logger
 import spaces.CombinatoricsGenerator
 import spaces.spaces.SpaceAbstract
+import kotlin.math.floor
 
 /**
  * Represents the segmentation of a box in the underlying [SpaceAbstract] into unit sized `d`-dimensional cubes.
@@ -40,5 +41,26 @@ class Segmentation(
             .setMessage("Segmentation Created")
             .addKeyValue("segmentCount", it.size)
             .log()
+    }
+
+    /**
+     * Find the [Segment] of this [Segmentation] that contains the [absolute] coordinates given.
+     *
+     * @param absolute the absolute position coordinates
+     * @return the segment of this segmentation that contains the [absolute] coordinates if there is any, otherwise null.
+     */
+    fun segmentOf(absolute: DoubleArray): Segment? {
+        return segments[absolute.map { floor(it).toInt() }.toIntArray().contentToString()]
+    }
+
+    /**
+     * Find the [Segment] of this [Segmentation] that contains the [absolute] coordinates given.
+     * Since [absolute] is an [IntArray] this will always return the segment with [Segment.basePosition] = [absolute].
+     *
+     * @param absolute the absolute position coordinates
+     * @return the segment of this segmentation that contains the [absolute] coordinates if there is any, otherwise null.
+     */
+    fun segmentOf(absolute: IntArray): Segment? {
+        return segments[absolute.contentToString()]
     }
 }

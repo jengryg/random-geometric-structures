@@ -7,10 +7,10 @@ const val OUTPUT_DIRECTORY = "figures"
 
 fun main(args: Array<String>) {
     val rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
-    rootLogger.level = Level.TRACE
+    rootLogger.level = Level.DEBUG
 
     runBlocking {
-        ExampleFigureGeneration.examplePoissonPointProcessStepConstruction()
-        ExampleFigureGeneration.exampleVietorisRipsComplexStepConstruction()
+        ExampleFigureGeneration.poissonPointProcessStepConstruction()
+        ExampleFigureGeneration.vietorisRipsComplexStepConstruction()
     }
 }
