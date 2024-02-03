@@ -15,7 +15,7 @@ class SimplexModel(
     val vertices: List<SegmentationPoint>
 ) {
     init {
-        assert(vertices.isNotEmpty())
+        assert(vertices.isNotEmpty()) { "SimplexModel must have at least one vertex." }
         // We can simplify a lot of the implementations in this class if we do not allow this simplex to be empty.
     }
 

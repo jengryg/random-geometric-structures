@@ -13,6 +13,10 @@ class BoxModel(
      * The [BoxModel] is contained in a cluster if and only if this method returns true.
      */
     fun containedIn(cluster: Cluster): Boolean {
+        if (cluster.dimension != intervals.size) {
+            return false
+        }
+
         intervals.forEachIndexed { index, intervalDouble ->
             if (intervalDouble.start < cluster.lowerBound[index]) {
                 return false

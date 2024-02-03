@@ -6,7 +6,7 @@ import ppp.segmentation.SegmentationPoint
  * Represents an [AdjacencyMatrix] of an undirected graph where [indexes] is the set of the vertices.
  */
 class AdjacencyMatrix(
-    val indexes: Set<Int>
+    private val indexes: Set<Int>
 ) {
     /**
      * The [adjacency] is represented as matrix with rows and columns indexed by integers.
@@ -31,8 +31,8 @@ class AdjacencyMatrix(
     }
 
     /**
-     * @return The number of undirected edges a graph this AdjacencyMatrix has. Connections from a vertex to itself are
-     * not counted.
+     * @return The number of undirected edges a graph with this AdjacencyMatrix has.
+     * Connections from a vertex to itself are not counted.
      */
     fun count(): Int {
         var counter = 0
@@ -67,7 +67,7 @@ class AdjacencyMatrix(
      * @param y the second point of the connection
      */
     fun connect(x: SegmentationPoint, y: SegmentationPoint) {
-        connect(x.id, y.id)
+        set(x.id, y.id, true)
     }
 
     /**
@@ -91,7 +91,7 @@ class AdjacencyMatrix(
      * @param y the second point of the connection
      */
     fun disconnect(x: SegmentationPoint, y: SegmentationPoint) {
-        disconnect(x.id, y.id)
+        set(x.id, y.id, false)
     }
 
     /**
