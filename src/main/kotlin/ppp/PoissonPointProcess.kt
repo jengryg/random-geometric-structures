@@ -6,26 +6,33 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import logger
-import org.apache.commons.math3.distribution.PoissonDistribution
-import org.apache.commons.math3.distribution.UniformRealDistribution
+import org.apache.commons.math3.distribution.AbstractIntegerDistribution
+import org.apache.commons.math3.distribution.AbstractRealDistribution
 import ppp.filter.PointFilter
 import ppp.segmentation.Segment
 import ppp.segmentation.Segmentation
 import ppp.segmentation.SegmentationPoint
 
 /**
- * The [PoissonPointProcess] is constructed over the [segmentation] where [countDistributionAssigner] is used to assign
- * an instance of [PoissonDistribution] to each [Segment].
+ * The [PoissonPointProcess] is constructed over the [segmentation] where each segment is assigned
+ * an [AbstractIntegerDistribution] to sample the number of points for that segment from,
+ * an [AbstractRealDistribution] to sample each coordinate entry for the position of the points in that segment from.
  *
+ * The [pointFilterAssigner] assigns a [PointFilter] to each [Segment] and operates on the absolute coordinate of the
+ * sampled points in the corresponding segment to accept or reject points.
+ **
  * @param segmentation the underlying [Segmentation] to use for the cube based construction
  *
- * @param countDistributionAssigner callable to assign a [PoissonDistribution] to the given [Segment]
+ * @param countDistributionAssigner callable to assign a [AbstractIntegerDistribution] to the given [Segment]
+ *
+ * @param positionDistributionAssigner callable to assign a [AbstractRealDistribution] to the given [Segment]
  *
  * @param pointFilterAssigner callable to assign a [PointFilter] to the given [Segment]
  */
 class PoissonPointProcess(
     val segmentation: Segmentation,
-    val countDistributionAssigner: (Segment) -> PoissonDistribution,
+    val countDistributionAssigner: (Segment) -> AbstractIntegerDistribution,
+    val positionDistributionAssigner: (Segment) -> AbstractRealDistribution,
     val pointFilterAssigner: (Segment) -> PointFilter
 ) : Logging {
     private val log = logger()
@@ -63,7 +70,6 @@ class PoissonPointProcess(
     suspend fun generate() {
         reset()
 
-        val uniformRealDistribution = UniformRealDistribution()
         var pointIdSequence = 0
 
         segmentation.segments.values.forEach {
@@ -76,17 +82,15 @@ class PoissonPointProcess(
             log.atDebug()
                 .setMessage("Creating PoissonSegment")
                 .addKeyValue("segmentId", it.basePosition.contentToString())
-                .addKeyValue("intensity", distribution.mean)
                 .addKeyValue("numberOfPoints", numberOfPoints)
                 .addKeyValue("firstPointId", pointIdSequence)
                 .log()
 
             segments[it.basePosition.contentToString()] = PoissonSegment(
                 segment = it,
-                intensity = distribution.mean,
                 numberOfPoints = numberOfPoints,
                 firstPointId = pointIdSequence,
-                positionDistribution = uniformRealDistribution,
+                positionDistribution = positionDistributionAssigner(it),
                 pointFilter = pointFilterAssigner(it)
             )
 

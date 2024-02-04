@@ -2,7 +2,7 @@ package ppp
 
 import Logging
 import logger
-import org.apache.commons.math3.distribution.UniformRealDistribution
+import org.apache.commons.math3.distribution.AbstractRealDistribution
 import ppp.filter.PointFilter
 import ppp.segmentation.Segment
 import ppp.segmentation.SegmentationPoint
@@ -17,8 +17,6 @@ import ppp.segmentation.SegmentationPoint
  *
  * @param segment the underlying [Segment] to use for the construction of this cube
  *
- * @param intensity the intensity used as parameter to sample the [numberOfPoints]
- *
  * @param numberOfPoints the number of points to distribute in this [Segment]
  *
  * @param firstPointId used in the enumeration of the generated points
@@ -29,10 +27,9 @@ import ppp.segmentation.SegmentationPoint
  */
 class PoissonSegment(
     val segment: Segment,
-    val intensity: Double,
     val numberOfPoints: Int,
     val firstPointId: Int,
-    val positionDistribution: UniformRealDistribution,
+    val positionDistribution: AbstractRealDistribution,
     val pointFilter: PointFilter
 ) : Logging {
     private val log = logger()

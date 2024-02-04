@@ -1,6 +1,7 @@
 import figures.PoissonPointProcessStepConstruction
 import figures.VietorisRipsComplexStepConstruction
 import org.apache.commons.math3.distribution.PoissonDistribution
+import org.apache.commons.math3.distribution.UniformRealDistribution
 import ppp.PoissonPointProcess
 import ppp.filter.AllowAllPointFilter
 import ppp.segmentation.Segmentation
@@ -16,11 +17,13 @@ object ExampleFigureGeneration {
         )
 
         val pointDistribution = PoissonDistribution(5.0)
+        val uniformDistribution = UniformRealDistribution()
         val pointFilter = AllowAllPointFilter()
 
         val ppp = PoissonPointProcess(
             segmentation = segmentation,
             countDistributionAssigner = { pointDistribution },
+            positionDistributionAssigner = { uniformDistribution },
             pointFilterAssigner = { pointFilter }
         )
 
@@ -39,11 +42,13 @@ object ExampleFigureGeneration {
         )
 
         val pointDistribution = PoissonDistribution(5.0)
+        val uniformRealDistribution = UniformRealDistribution()
         val pointFilter = AllowAllPointFilter()
 
         val ppp = PoissonPointProcess(
             segmentation = segmentation,
             countDistributionAssigner = { pointDistribution },
+            positionDistributionAssigner = { uniformRealDistribution },
             pointFilterAssigner = { pointFilter }
         )
 
