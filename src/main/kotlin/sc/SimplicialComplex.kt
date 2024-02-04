@@ -3,7 +3,6 @@ package sc
 import Logging
 import logger
 import ppp.segmentation.SegmentationPoint
-import sc.aspects.Connectivity
 import sc.model.AdjacencyMatrix
 import sc.model.SimplexModel
 
@@ -58,9 +57,4 @@ open class SimplicialComplex(
             adjacencyMatrix.connect(edge.vertices[0], edge.vertices[1])
         }
     }
-
-    /**
-     * The [Connectivity] model of this [SimplexModel].
-     */
-    val connectivity: Lazy<Connectivity> = lazy { Connectivity(this) }
 }

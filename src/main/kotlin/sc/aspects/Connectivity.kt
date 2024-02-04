@@ -13,7 +13,7 @@ import sc.model.ComponentModel
  * with each other according to the [GraphAbstract.adjacencyMatrix].
  */
 class Connectivity(
-    val graph: GraphAbstract
+    private val graph: GraphAbstract
 ) : Logging {
     private val log = logger()
 

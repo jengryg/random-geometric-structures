@@ -2,7 +2,9 @@ package sc
 
 import ppp.segmentation.Segmentation
 import ppp.segmentation.SegmentationPoint
+import sc.aspects.Connectivity
 import sc.model.AdjacencyMatrix
+import sc.model.SimplexModel
 import spaces.spaces.Space
 
 /**
@@ -37,4 +39,9 @@ abstract class GraphAbstract(
      * we consider only undirected graphs here.
      */
     val adjacencyMatrix = AdjacencyMatrix(vertices.map { it.id }.toSet())
+
+    /**
+     * The [Connectivity] model of this [SimplexModel].
+     */
+    val connectivity: Lazy<Connectivity> = lazy { Connectivity(this) }
 }
