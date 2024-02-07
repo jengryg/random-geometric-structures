@@ -1,6 +1,6 @@
 package spaces
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class CombinatoricsGeneratorTest {
@@ -12,9 +12,9 @@ class CombinatoricsGeneratorTest {
             )
         )
 
-        Assertions.assertThat(lattice).hasSize(9)
+        assertThat(lattice).hasSize(9)
 
-        Assertions.assertThat(
+        assertThat(
             lattice.map {
                 it.contentToString()
             }
@@ -32,6 +32,6 @@ class CombinatoricsGeneratorTest {
             upperCorner = intArrayOf(1, 2, -1)
         )
 
-        Assertions.assertThat(lattice).hasSize(27)
+        assertThat(lattice).hasSize(27)
     }
 }

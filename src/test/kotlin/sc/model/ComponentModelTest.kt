@@ -1,7 +1,7 @@
 package sc.model
 
 import io.mockk.mockk
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class ComponentModelTest {
@@ -9,16 +9,16 @@ class ComponentModelTest {
     fun `check basic functionality`() {
         val component = ComponentModel(id = 0)
 
-        Assertions.assertThat(component.vertices).isEmpty()
+        assertThat(component.vertices).isEmpty()
 
         component.addPoint(mockk())
 
-        Assertions.assertThat(component.vertices).hasSize(1)
-        Assertions.assertThat(component.size).isEqualTo(1)
+        assertThat(component.vertices).hasSize(1)
+        assertThat(component.size).isEqualTo(1)
 
         component.addPoint(mockk())
 
-        Assertions.assertThat(component.vertices).hasSize(2)
-        Assertions.assertThat(component.size).isEqualTo(2)
+        assertThat(component.vertices).hasSize(2)
+        assertThat(component.size).isEqualTo(2)
     }
 }

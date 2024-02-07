@@ -1,6 +1,6 @@
 package spaces
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -12,7 +12,7 @@ class PrimitiveArrayExtensions {
     @ParameterizedTest
     @MethodSource("provideDoubleAdditionTestData")
     fun `double array component wise addition`(x: DoubleArray, y: DoubleArray, expected: DoubleArray) {
-        Assertions.assertThat(x + y).containsExactly(expected.toTypedArray())
+        assertThat(x + y).containsExactly(expected.toTypedArray())
     }
 
     private fun provideDoubleAdditionTestData(): Stream<Arguments> {
@@ -37,7 +37,7 @@ class PrimitiveArrayExtensions {
     @ParameterizedTest
     @MethodSource("provideDoubleSubtractionTestData")
     fun `double array component wise subtraction`(x: DoubleArray, y: DoubleArray, expected: DoubleArray) {
-        Assertions.assertThat(x - y).containsExactly(expected.toTypedArray())
+        assertThat(x - y).containsExactly(expected.toTypedArray())
     }
 
     private fun provideDoubleSubtractionTestData(): Stream<Arguments> {
@@ -62,7 +62,7 @@ class PrimitiveArrayExtensions {
     @ParameterizedTest
     @MethodSource("provideDoubleAdditionIntegerTestData")
     fun `double array component wise addition of integer array`(x: DoubleArray, y: IntArray, expected: DoubleArray) {
-        Assertions.assertThat(x + y).containsExactly(expected.toTypedArray())
+        assertThat(x + y).containsExactly(expected.toTypedArray())
     }
 
     private fun provideDoubleAdditionIntegerTestData(): Stream<Arguments> {
@@ -85,7 +85,7 @@ class PrimitiveArrayExtensions {
     @ParameterizedTest
     @MethodSource("provideDoubleSubtractionIntegerTestData")
     fun `double array component wise subtraction of integer array`(x: DoubleArray, y: IntArray, expected: DoubleArray) {
-        Assertions.assertThat(x - y).containsExactly(expected.toTypedArray())
+        assertThat(x - y).containsExactly(expected.toTypedArray())
     }
 
     private fun provideDoubleSubtractionIntegerTestData(): Stream<Arguments> {
@@ -108,7 +108,7 @@ class PrimitiveArrayExtensions {
     @ParameterizedTest
     @MethodSource("provideIntegerAdditionTestData")
     fun `integer array component wise addition`(x: IntArray, y: IntArray, expected: IntArray) {
-        Assertions.assertThat(x + y).containsExactly(expected.toTypedArray())
+        assertThat(x + y).containsExactly(expected.toTypedArray())
     }
 
     private fun provideIntegerAdditionTestData(): Stream<Arguments> {
@@ -128,7 +128,7 @@ class PrimitiveArrayExtensions {
     @ParameterizedTest
     @MethodSource("provideIntegerSubtractionTestData")
     fun `integer array component wise subtraction`(x: IntArray, y: IntArray, expected: IntArray) {
-        Assertions.assertThat(x - y).containsExactly(expected.toTypedArray())
+        assertThat(x - y).containsExactly(expected.toTypedArray())
     }
 
     private fun provideIntegerSubtractionTestData(): Stream<Arguments> {
@@ -148,7 +148,7 @@ class PrimitiveArrayExtensions {
     @ParameterizedTest
     @MethodSource("provideIntegerArrayToDoubleTestData")
     fun `integer array component wise to double conversion`(given: IntArray, expected: DoubleArray) {
-        Assertions.assertThat(given.toDoubleArray()).containsExactly(expected.toTypedArray())
+        assertThat(given.toDoubleArray()).containsExactly(expected.toTypedArray())
     }
 
     private fun provideIntegerArrayToDoubleTestData(): Stream<Arguments> {

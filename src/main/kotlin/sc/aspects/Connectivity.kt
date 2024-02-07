@@ -3,7 +3,6 @@ package sc.aspects
 import Logging
 import logger
 import sc.GraphAbstract
-import sc.SimplicialComplex
 import sc.model.ComponentModel
 
 /**

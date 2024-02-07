@@ -2,7 +2,7 @@ package spaces.metrics
 
 import io.mockk.every
 import io.mockk.mockk
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -23,8 +23,8 @@ class UniformMetricTest {
         every { pointX.absolute } returns x
         every { pointY.absolute } returns y
 
-        Assertions.assertThat(metric.distance(pointX, pointY)).isEqualTo(distance)
-        Assertions.assertThat(metric.distance(pointY, pointX)).isEqualTo(distance)
+        assertThat(metric.distance(pointX, pointY)).isEqualTo(distance)
+        assertThat(metric.distance(pointY, pointX)).isEqualTo(distance)
     }
 
     private fun provideDataForDistanceTest(): Stream<Arguments> {
@@ -49,7 +49,7 @@ class UniformMetricTest {
     fun `test uniform length calculation`(point: DoubleArray, length: Double) {
         every { pointX.absolute } returns point
 
-        Assertions.assertThat(metric.length(pointX)).isEqualTo(length)
+        assertThat(metric.length(pointX)).isEqualTo(length)
     }
 
     private fun provideDataLengthTest(): Stream<Arguments> {

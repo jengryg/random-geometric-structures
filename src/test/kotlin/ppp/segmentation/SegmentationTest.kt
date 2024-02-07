@@ -1,6 +1,7 @@
 package ppp.segmentation
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class SegmentationTest {
@@ -12,12 +13,12 @@ class SegmentationTest {
             )
         )
 
-        Assertions.assertThat(segmentation.rangeLimits).hasSize(2)
+        assertThat(segmentation.rangeLimits).hasSize(2)
 
-        Assertions.assertThat(segmentation.rangeLimits[0]).containsExactly(-1, 0, 1)
-        Assertions.assertThat(segmentation.rangeLimits[1]).containsExactly(2, 3, 4, 5, 6)
+        assertThat(segmentation.rangeLimits[0]).containsExactly(-1, 0, 1)
+        assertThat(segmentation.rangeLimits[1]).containsExactly(2, 3, 4, 5, 6)
 
-        Assertions.assertThat(
+        assertThat(
             segmentation.segments
         ).hasSize(8).containsKeys(
             "[-1, 2]",
@@ -33,7 +34,7 @@ class SegmentationTest {
 
     @Test
     fun `segmentation must at least have dimension 1`() {
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             Segmentation(
                 rangeLimits = arrayOf()
             )
