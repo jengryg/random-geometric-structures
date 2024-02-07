@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PrimitiveArrayExtensions {
+class PrimitiveArrayExtensionsTest {
     @ParameterizedTest
     @MethodSource("provideDoubleAdditionTestData")
     fun `double array component wise addition`(x: DoubleArray, y: DoubleArray, expected: DoubleArray) {
