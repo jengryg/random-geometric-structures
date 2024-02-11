@@ -1,6 +1,6 @@
-package sc.model
+package graph
 
-import spaces.segmentation.SegmentationPoint
+import spaces.segmentation.Point
 
 /**
  * Represents an [AdjacencyMatrix] of an undirected graph where [indexes] is the set of the vertices.
@@ -66,7 +66,7 @@ class AdjacencyMatrix(
      * @param x the first point of the connection
      * @param y the second point of the connection
      */
-    fun connect(x: SegmentationPoint, y: SegmentationPoint) {
+    fun connect(x: Point, y: Point) {
         set(x.id, y.id, true)
     }
 
@@ -90,7 +90,7 @@ class AdjacencyMatrix(
      * @param x the first point of the connection
      * @param y the second point of the connection
      */
-    fun disconnect(x: SegmentationPoint, y: SegmentationPoint) {
+    fun disconnect(x: Point, y: Point) {
         set(x.id, y.id, false)
     }
 
@@ -116,7 +116,7 @@ class AdjacencyMatrix(
      * @param x the first point of the connection
      * @param y the second point of the connection
      */
-    fun set(x: SegmentationPoint, y: SegmentationPoint, value: Boolean) {
+    fun set(x: Point, y: Point, value: Boolean) {
         set(x.id, y.id, value)
     }
 
@@ -142,7 +142,7 @@ class AdjacencyMatrix(
      * @param y the second point
      * @return true if [x] and [y] are connected, false otherwise
      */
-    fun get(x: SegmentationPoint, y: SegmentationPoint): Boolean {
+    fun get(x: Point, y: Point): Boolean {
         return get(x.id, y.id)
     }
 
@@ -155,7 +155,7 @@ class AdjacencyMatrix(
      * @param otherPoints the other points to test the given single [point] against
      * @return true if [point] is connected to each of the points in [otherPoints], false otherwise
      */
-    fun all(point: SegmentationPoint, otherPoints: List<SegmentationPoint>): Boolean {
+    fun all(point: Point, otherPoints: List<Point>): Boolean {
         return otherPoints.all { get(point, it) }
     }
 

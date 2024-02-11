@@ -1,11 +1,11 @@
-package sc.model
+package graph
 
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCode
 import org.junit.jupiter.api.Test
-import spaces.segmentation.SegmentationPoint
+import spaces.segmentation.Point
 
 class AdjacencyMatrixTest {
     /**
@@ -14,7 +14,7 @@ class AdjacencyMatrixTest {
     private val indexes = setOf(1, 2, 3, 5, 8, 13, 21, 34)
 
     private val mockedPoints = indexes.map {
-        mockk<SegmentationPoint> {
+        mockk<Point> {
             every { id } returns it
         }
     }
@@ -45,8 +45,8 @@ class AdjacencyMatrixTest {
         assertThat(adjacencyMatrix.get(1, 1)).isFalse
 
         adjacencyMatrix.disconnect(
-            mockk<SegmentationPoint> { every { id } returns 8 },
-            mockk<SegmentationPoint> { every { id } returns 5 }
+            mockk<Point> { every { id } returns 8 },
+            mockk<Point> { every { id } returns 5 }
         )
         assertThat(adjacencyMatrix.get(5, 8)).isFalse
 
@@ -94,10 +94,10 @@ class AdjacencyMatrixTest {
         assertThat(adjacencyMatrix.get(1, 2)).isTrue
 
         adjacencyMatrix.set(
-            mockk<SegmentationPoint> {
+            mockk<Point> {
                 every { id } returns 1
             },
-            mockk<SegmentationPoint> {
+            mockk<Point> {
                 every { id } returns 2
             },
             false
@@ -116,19 +116,19 @@ class AdjacencyMatrixTest {
         adjacencyMatrix.connect(1, 3)
         adjacencyMatrix.connect(1, 5)
 
-        val m1 = mockk<SegmentationPoint> {
+        val m1 = mockk<Point> {
             every { id } returns 1
         }
-        val m2 = mockk<SegmentationPoint> {
+        val m2 = mockk<Point> {
             every { id } returns 2
         }
-        val m3 = mockk<SegmentationPoint> {
+        val m3 = mockk<Point> {
             every { id } returns 3
         }
-        val m5 = mockk<SegmentationPoint> {
+        val m5 = mockk<Point> {
             every { id } returns 5
         }
-        val m8 = mockk<SegmentationPoint> {
+        val m8 = mockk<Point> {
             every { id } returns 8
         }
 

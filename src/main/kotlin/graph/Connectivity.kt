@@ -1,33 +1,34 @@
-package sc.aspects
+package graph
 
 import Logging
 import logger
-import sc.GraphAbstract
-import sc.model.ComponentModel
+import spaces.segmentation.Point
 
 /**
- * The [Connectivity] represents the analysis of the connected components in the [GraphAbstract].
+ * The [Connectivity] represents the analysis of the connected components in the [Graph].
  *
- * A connected component is the [ComponentModel] containing all vertices that are directly or indirectly connected
- * with each other according to the [GraphAbstract.adjacencyMatrix].
+ * A connected component is the [GraphComponent] containing all vertices that are directly or indirectly connected
+ * with each other according to the [Graph.adjacencyMatrix].
  */
 class Connectivity(
-    private val graph: GraphAbstract
+    private val vertices: List<Point>,
+    private val adjacencyMatrix: AdjacencyMatrix,
+    private val pointsByIds: Map<Int, Point>
 ) : Logging {
     private val log = logger()
 
     /**
      * All connected components indexed by their id.
      */
-    val connectedComponents = mutableMapOf<Int, ComponentModel>()
+    val connectedComponents = mutableMapOf<Int, GraphComponent>()
 
     /**
      * If a component with the given [id] already exists in [connectedComponents] it is returned.
-     * Otherwise, a new [ComponentModel] is initialized, added to the list [connectedComponents] of this simplicial
+     * Otherwise, a new [GraphComponent] is initialized, added to the list [connectedComponents] of this simplicial
      * complexes and returned for further usage.
      */
-    fun component(id: Int): ComponentModel {
-        return connectedComponents[id] ?: ComponentModel(id).also {
+    fun component(id: Int): GraphComponent {
+        return connectedComponents[id] ?: GraphComponent(id).also {
             connectedComponents[id] = it
         }
     }
@@ -38,24 +39,24 @@ class Connectivity(
      *
      * [calculateConnectedComponents] must be executed before this map is available.
      */
-    val componentsByPoint = mutableMapOf<Int, ComponentModel?>().apply {
-        graph.vertices.forEach { set(it.id, null) }
+    val componentsByPoint = mutableMapOf<Int, GraphComponent?>().apply {
+        vertices.forEach { set(it.id, null) }
         // initialize by assigning null to each point
     }
 
     /**
-     * Determine the connected components of the simplicial complex.
-     * This method requires the [SimplicialComplex.adjacencyMatrix] to be known.
+     * Determine the connected components of the [Graph].
+     * This method requires the [Graph.adjacencyMatrix] to be known.
      *
-     * This method executes a walker algorithm that will travel along the vertices of this simplicial complex aiming
-     * to determine the connected components of the complex by ensuring that it visited each vertex.
+     * This method executes a walker algorithm that will travel along the vertices of the graph aiming to determine the
+     * connected components of the graph by ensuring that it visited each vertex.
      */
     fun calculateConnectedComponents() {
-        if (graph.vertices.isEmpty()) {
+        if (vertices.isEmpty()) {
             return
         }
 
-        graph.vertices.forEach {
+        vertices.forEach {
             componentsByPoint[it.id] = null
             // reset the assignment of all points
         }
@@ -66,11 +67,11 @@ class Connectivity(
         var componentId = 0
         // each component gets its own id, this is the counter to keep track of them
 
-        val visited = graph.vertices.map { it.id }.associateWith { false }.toMutableMap()
+        val visited = vertices.map { it.id }.associateWith { false }.toMutableMap()
         // Create a map from the ids of all vertices to the initialized value false that records the visiting status.
         // This map traces the state of the search algorithm travelling through the graph.
 
-        var remaining = graph.vertices.size
+        var remaining = vertices.size
         // the number of unvisited vertices in the complex
 
         while (remaining > 0) {
@@ -88,7 +89,7 @@ class Connectivity(
             // Note: There should be keys left to be used as rootPointId as long as the remaining counter is > 0.
 
             val currentComponent = component(componentId++).apply {
-                addPoint(graph.pointsById[rootPointId]!!)
+                addPoint(pointsByIds[rootPointId]!!)
             }
             // initialize a new component with the current rootPointId as its first vertex
 
@@ -109,12 +110,12 @@ class Connectivity(
                 componentsByPoint[currentVertexId] = currentComponent
                 // keep track of the assignments of points to components
 
-                graph.adjacencyMatrix.connections(currentVertexId).filter {
+                adjacencyMatrix.connections(currentVertexId).filter {
                     componentsByPoint[it] == null
                     // we only care about points that are not already assigned to a component
                 }.forEach {
                     componentsByPoint[it] = currentComponent
-                    currentComponent.addPoint(graph.pointsById[it]!!)
+                    currentComponent.addPoint(pointsByIds[it]!!)
                     // assign the point to the component
 
                     log.atTrace()

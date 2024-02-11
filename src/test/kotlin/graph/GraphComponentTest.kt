@@ -1,13 +1,13 @@
-package sc.model
+package graph
 
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ComponentModelTest {
+class GraphComponentTest {
     @Test
     fun `check basic functionality`() {
-        val component = ComponentModel(id = 0)
+        val component = GraphComponent(id = 17)
 
         assertThat(component.vertices).isEmpty()
 
