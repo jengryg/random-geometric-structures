@@ -2,7 +2,6 @@ package spaces.segmentation
 
 import Logging
 import logger
-import spaces.CombinatoricsGenerator
 import spaces.Space
 import spaces.minus
 import spaces.plus
@@ -11,18 +10,17 @@ import spaces.plus
  * The segment is a unit sized box that belongs to the [segmentation] and is identified by its [basePosition] that is
  * the lower left corner of the box, i.e. it is the point of the box that has the lowest value for each coordinate entry
  * possible. The box can then be represented as the Minkowski sum of `{b} + [0,1)^d` where `{b}` is the set containing
- * only the base point and `[0,1)^d` is the left closed and right opened interval raised to the dimension `d`.
+ * only the base point and `[0,1)^d` is the left closed and right opened interval from `0` to `1` raised to the
+ * dimension `d`.
  */
 class Segment(
     val segmentation: Segmentation,
-    val basePosition: IntArray,
+    val basePosition: IntArray
 ) : Space by segmentation, Logging {
     private val log = logger()
 
     init {
-        assert(basePosition.size == dimension) {
-            "The given base position is of a different dimension than the segmentation dimension!"
-        }
+        require(basePosition.size == dimension) { "The given base position is of a different dimension than the segmentation!" }
     }
 
     /**
@@ -67,34 +65,5 @@ class Segment(
         }
 
         return true
-    }
-
-    /**
-     * Construct the cluster by taking the [basePosition] of this segment and find all other segments of the
-     * [segmentation] that have a [basePosition] that is at most [expand] far away.
-     *
-     * This is achieved by calculating the position given by
-     */
-    fun neighborhood(expand: Int): Cluster {
-        val expandArray = IntArray(dimension) { expand }
-
-        val lattice = CombinatoricsGenerator.lattice(
-            lowerCorner = basePosition - expandArray,
-            upperCorner = basePosition + expandArray
-        ).also {
-            log.atTrace()
-                .addKeyValue("basePosition") { basePosition.contentToString() }
-                .addKeyValue("expandArray") { expandArray.contentToString() }
-                .addKeyValue("lattice") {
-                    it.map { it.contentToString() }
-                }.log("Cluster lattice created.")
-        }
-
-        return Cluster(
-            segmentation = segmentation,
-            segments = lattice.mapNotNull {
-                segmentation.segments[it.contentToString()]
-            }
-        )
     }
 }

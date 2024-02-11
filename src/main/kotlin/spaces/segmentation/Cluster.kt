@@ -4,10 +4,12 @@ import Logging
 import logger
 import spaces.Space
 
-
 /**
  * The [Cluster] represents a box inside the underlying [Segmentation] that can be represented as the union of the
  * given [segments].
+ *
+ * @param segmentation the segmentation this cluster was constructed from
+ * @param segments the segments that belong to this cluster
  */
 class Cluster(
     val segmentation: Segmentation,
@@ -28,7 +30,7 @@ class Cluster(
     val upperBound: IntArray
 
     init {
-        assert(segments.isNotEmpty()) { "Cluster must be created with at least one segment." }
+        require(segments.isNotEmpty()) { "Cluster must contain at least one segment!" }
 
         lowerBound = segments.let {
             IntArray(dimension) { coordinateIndex ->

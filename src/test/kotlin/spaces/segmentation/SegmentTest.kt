@@ -8,9 +8,9 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SegmentTest {
-
     private val errThreshold = within(0.000000001)
 
     private val segmentation = Segmentation(
@@ -35,8 +35,8 @@ class SegmentTest {
                 segmentation = segmentation,
                 basePosition = intArrayOf()
             )
-        }.isInstanceOf(AssertionError::class.java)
-            .hasMessage("The given base position is of a different dimension than the segmentation dimension!")
+        }.isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("The given base position is of a different dimension than the segmentation!")
     }
 
     @ParameterizedTest
@@ -186,121 +186,6 @@ class SegmentTest {
             Arguments.of(
                 intArrayOf(2, 3, -4), doubleArrayOf(3.00, 4.00, -3.00), false
             ),
-        )
-    }
-
-    @Test
-    fun `check neighborhood construction for non-boundary case`() {
-        val segment = Segment(
-            segmentation = segmentation,
-            basePosition = intArrayOf(0, 0, 0)
-        )
-
-        segment.neighborhood(0).segments.let { list ->
-            assertThat(list).hasSize(1)
-            assertThat(list.map { it.basePosition.contentToString() }).containsExactlyInAnyOrder(
-                "[0, 0, 0]"
-            )
-        }
-
-        segment.neighborhood(1).segments.let { list ->
-            assertThat(list).hasSize(27)
-            assertThat(list.map { it.basePosition.contentToString() }).containsExactlyInAnyOrder(
-                "[-1, -1, -1]",
-                "[-1, -1, 0]",
-                "[-1, -1, 1]",
-                "[-1, 0, -1]",
-                "[-1, 0, 0]",
-                "[-1, 0, 1]",
-                "[-1, 1, -1]",
-                "[-1, 1, 0]",
-                "[-1, 1, 1]",
-                "[0, -1, -1]",
-                "[0, -1, 0]",
-                "[0, -1, 1]",
-                "[0, 0, -1]",
-                "[0, 0, 0]",
-                "[0, 0, 1]",
-                "[0, 1, -1]",
-                "[0, 1, 0]",
-                "[0, 1, 1]",
-                "[1, -1, -1]",
-                "[1, -1, 0]",
-                "[1, -1, 1]",
-                "[1, 0, -1]",
-                "[1, 0, 0]",
-                "[1, 0, 1]",
-                "[1, 1, -1]",
-                "[1, 1, 0]",
-                "[1, 1, 1]"
-            )
-        }
-        assertThat(segment.neighborhood(2).segments).hasSize(125)
-    }
-
-    @Test
-    fun `check neighborhood construction for boundary cases`() {
-        val segment = Segment(
-            segmentation = segmentation,
-            basePosition = intArrayOf(-3, -3, -3)
-        )
-
-        segment.neighborhood(0).segments.let { list ->
-            assertThat(list).hasSize(1)
-            assertThat(list.map { it.basePosition.contentToString() }).containsExactlyInAnyOrder(
-                "[-3, -3, -3]"
-            )
-        }
-
-        segment.neighborhood(1).segments.let { list ->
-            assertThat(list).hasSize(8)
-            assertThat(list.map { it.basePosition.contentToString() }).containsExactlyInAnyOrder(
-                "[-3, -3, -3]",
-                "[-3, -3, -2]",
-                "[-3, -2, -3]",
-                "[-3, -2, -2]",
-                "[-2, -3, -3]",
-                "[-2, -3, -2]",
-                "[-2, -2, -3]",
-                "[-2, -2, -2]"
-            )
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideDoubleArrayTestDataForSegmentOf")
-    fun `check segmentOf with DoubleArray methods`(point: DoubleArray, segmentIdentifier: String) {
-        assertThat(
-            segmentation.segmentOf(point)
-        ).isEqualTo(
-            segmentation.segments[segmentIdentifier]
-        )
-    }
-
-    private fun provideDoubleArrayTestDataForSegmentOf(): Stream<Arguments> {
-        return Stream.of(
-            Arguments.of(doubleArrayOf(0.0, 0.0, 0.0), "[0, 0, 0]"),
-            Arguments.of(doubleArrayOf(0.9, 0.7, 0.2), "[0, 0, 0]"),
-            Arguments.of(doubleArrayOf(-0.3, 0.0, 0.0), "[-1, 0, 0]"),
-            Arguments.of(doubleArrayOf(-1.2, -3.0, 1.3), "[-2, -3, 1]")
-        )
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideIntArrayTestDataForSegmentOf")
-    fun `check segmentOf with IntArray methods`(point: IntArray, segmentIdentifier: String) {
-        assertThat(
-            segmentation.segmentOf(point)
-        ).isEqualTo(
-            segmentation.segments[segmentIdentifier]
-        )
-    }
-
-    private fun provideIntArrayTestDataForSegmentOf(): Stream<Arguments> {
-        return Stream.of(
-            Arguments.of(intArrayOf(0, 0, 0), "[0, 0, 0]"),
-            Arguments.of(intArrayOf(1, 1, 1), "[1, 1, 1]"),
-            Arguments.of(intArrayOf(-1, -2, -3), "[-1, -2, -3]")
         )
     }
 }

@@ -14,8 +14,6 @@ class ClusterTest {
         arrayOf((-3..3), (-3..3), (-3..3))
     )
 
-    private val errThreshold = within(0.000000001)
-
     private val cluster = Cluster(
         segmentation = segmentation,
         segments = segmentation.segments.values.toList()
@@ -28,7 +26,7 @@ class ClusterTest {
                 segmentation = segmentation,
                 segments = listOf()
             )
-        }.isInstanceOf(AssertionError::class.java).hasMessage("Cluster must be created with at least one segment.")
+        }.isInstanceOf(IllegalArgumentException::class.java).hasMessage("Cluster must contain at least one segment!")
     }
 
     @Test
