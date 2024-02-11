@@ -9,23 +9,23 @@ import logger
 import org.apache.commons.math3.distribution.AbstractIntegerDistribution
 import org.apache.commons.math3.distribution.AbstractRealDistribution
 import ppp.filter.PointFilter
+import spaces.segmentation.Point
 import spaces.segmentation.Segment
 import spaces.segmentation.Segmentation
-import spaces.segmentation.SegmentationPoint
 
 /**
- * The [PoissonPointProcess] is constructed over the [segmentation] where each segment is assigned
+ * The [ppp.PoissonPointProcess] is constructed over the [segmentation] where each segment is assigned
  * an [AbstractIntegerDistribution] to sample the number of points for that segment from,
  * an [AbstractRealDistribution] to sample each coordinate entry for the position of the points in that segment from.
  *
  * The [pointFilterAssigner] assigns a [PointFilter] to each [Segment] and operates on the absolute coordinate of the
  * sampled points in the corresponding segment to accept or reject points.
- **
+ *
  * @param segmentation the underlying [Segmentation] to use for the cube based construction
  *
- * @param countDistributionAssigner callable to assign a [AbstractIntegerDistribution] to the given [Segment]
+ * @param countDistributionAssigner callable to assign an [AbstractIntegerDistribution] to the given [Segment]
  *
- * @param positionDistributionAssigner callable to assign a [AbstractRealDistribution] to the given [Segment]
+ * @param positionDistributionAssigner callable to assign an [AbstractRealDistribution] to the given [Segment]
  *
  * @param pointFilterAssigner callable to assign a [PointFilter] to the given [Segment]
  */
@@ -40,19 +40,19 @@ class PoissonPointProcess(
     /**
      * All generated points on the complete [segmentation] without [PointFilter] applied.
      */
-    val allPoints: MutableMap<Int, SegmentationPoint> = mutableMapOf()
+    val allPoints: MutableMap<Int, Point> = mutableMapOf()
 
     /**
      * The points generated on the complete [segmentation] that satisfied the conditions given by the respective
      * [PointFilter] for each [Segment].
      */
-    val acceptedPoints: MutableMap<Int, SegmentationPoint> = mutableMapOf()
+    val acceptedPoints: MutableMap<Int, Point> = mutableMapOf()
 
     /**
      * The points generated on the complete [segmentation] that failed the conditions given by the respective
      * [PointFilter] for each [Segment].
      */
-    val rejectedPoints: MutableMap<Int, SegmentationPoint> = mutableMapOf()
+    val rejectedPoints: MutableMap<Int, Point> = mutableMapOf()
 
     /**
      * All [PoissonSegment] used in the construction of this [PoissonPointProcess] indexed by their [Segment]
@@ -67,6 +67,9 @@ class PoissonPointProcess(
         segments.clear()
     }
 
+    /**
+     * Generate the points for all segments in the segmentation using [async] to parallelize with kotlin coroutines.
+     */
     suspend fun generate() {
         reset()
 

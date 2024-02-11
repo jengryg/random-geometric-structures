@@ -6,7 +6,7 @@ import org.apache.commons.math3.distribution.UniformRealDistribution
 import org.apache.commons.math3.random.Well19937c
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import ppp.filter.AllowAllPointFilter
+import ppp.filter.AcceptAllPointFilter
 import spaces.segmentation.Segmentation
 
 class PoissonPointProcessTest {
@@ -37,7 +37,7 @@ class PoissonPointProcessTest {
                 )
             },
             pointFilterAssigner = {
-                AllowAllPointFilter()
+                AcceptAllPointFilter()
             }
         )
 

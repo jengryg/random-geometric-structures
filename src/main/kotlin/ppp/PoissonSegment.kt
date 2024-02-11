@@ -4,14 +4,14 @@ import Logging
 import logger
 import org.apache.commons.math3.distribution.AbstractRealDistribution
 import ppp.filter.PointFilter
+import spaces.segmentation.Point
 import spaces.segmentation.Segment
-import spaces.segmentation.SegmentationPoint
 
 /**
- * The [PoissonSegment] is constructed over the cube given by the [segment].
+ * The [PoissonSegment] is constructed over the cube given by the [Segment].
  *
- * It will generate [numberOfPoints] points inside the cube using the [positionDistribution] to determine
- * the coordinates of the points inside the cube, i.e. the relative position to the [Segment.basePosition].
+ * It will generate [numberOfPoints] points inside the cube using the [positionDistribution] to determine the
+ * coordinates of the points inside the cube, i.e. the relative position to the [Segment.basePosition].
  *
  * For each point, the [pointFilter] decides if the generated point is accepted or rejected.
  *
@@ -37,17 +37,17 @@ class PoissonSegment(
     /**
      * All generated points on this [segment] without [pointFilter] applied.
      */
-    val allPoints: MutableMap<Int, SegmentationPoint> = mutableMapOf()
+    val allPoints: MutableMap<Int, Point> = mutableMapOf()
 
     /**
      * The points generated on this [segment] that satisfied the conditions given by [pointFilter].
      */
-    val acceptedPoints: MutableMap<Int, SegmentationPoint> = mutableMapOf()
+    val acceptedPoints: MutableMap<Int, Point> = mutableMapOf()
 
     /**
      * The points generated on this [segment] that failed the conditions given by [pointFilter].
      */
-    val rejectedPoints: MutableMap<Int, SegmentationPoint> = mutableMapOf()
+    val rejectedPoints: MutableMap<Int, Point> = mutableMapOf()
 
     private fun reset() {
         allPoints.clear()
@@ -56,7 +56,7 @@ class PoissonSegment(
     }
 
     /**
-     * Generate the [SegmentationPoint] on this [segment].
+     * Generate the points for this segment.
      */
     fun generate() {
         reset()
@@ -64,7 +64,7 @@ class PoissonSegment(
         var pointIdSequence = firstPointId
 
         val unrestricted = Array(numberOfPoints) {
-            SegmentationPoint(
+            Point(
                 id = pointIdSequence++,
                 uniform = positionDistribution.sample(segment.dimension),
                 // Generate DoubleArray using position distribution samples.
