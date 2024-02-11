@@ -1,11 +1,11 @@
 package sc
 
-import ppp.segmentation.Segmentation
-import ppp.segmentation.SegmentationPoint
 import sc.aspects.Connectivity
 import sc.model.AdjacencyMatrix
 import sc.model.SimplexModel
-import spaces.spaces.Space
+import spaces.Space
+import spaces.segmentation.Segmentation
+import spaces.segmentation.SegmentationPoint
 
 /**
  * A [GraphAbstract] is a simple base class used to ensure that some basic properties are available.

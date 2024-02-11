@@ -1,6 +1,6 @@
-package ppp.segmentation
+package spaces.segmentation
 
-import spaces.spaces.PointAbstract
+import spaces.PointAbstract
 
 /**
  * Represents a point in the underlying space with respect to the [Segmentation] of the space.

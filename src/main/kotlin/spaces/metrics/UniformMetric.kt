@@ -1,6 +1,6 @@
 package spaces.metrics
 
-import spaces.spaces.PointAbstract
+import spaces.PointAbstract
 import kotlin.math.abs
 
 /**

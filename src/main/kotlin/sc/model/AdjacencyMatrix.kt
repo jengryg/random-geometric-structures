@@ -1,6 +1,6 @@
 package sc.model
 
-import ppp.segmentation.SegmentationPoint
+import spaces.segmentation.SegmentationPoint
 
 /**
  * Represents an [AdjacencyMatrix] of an undirected graph where [indexes] is the set of the vertices.

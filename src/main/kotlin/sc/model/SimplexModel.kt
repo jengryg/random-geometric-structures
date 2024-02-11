@@ -1,7 +1,7 @@
 package sc.model
 
-import ppp.segmentation.Cluster
-import ppp.segmentation.SegmentationPoint
+import spaces.segmentation.Cluster
+import spaces.segmentation.SegmentationPoint
 
 /**
  * The simplex is the convex hull of the given set of [vertices].

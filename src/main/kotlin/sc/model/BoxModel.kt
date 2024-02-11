@@ -1,6 +1,6 @@
 package sc.model
 
-import ppp.segmentation.Cluster
+import spaces.segmentation.Cluster
 
 /**
  * Represents a box that is defined as the cross product of the given real number intervals represented by [ClosedRange]

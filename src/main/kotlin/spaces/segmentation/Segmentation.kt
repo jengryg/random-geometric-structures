@@ -1,9 +1,9 @@
-package ppp.segmentation
+package spaces.segmentation
 
 import Logging
 import logger
 import spaces.CombinatoricsGenerator
-import spaces.spaces.SpaceAbstract
+import spaces.SpaceAbstract
 import kotlin.math.floor
 
 /**

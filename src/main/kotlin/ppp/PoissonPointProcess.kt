@@ -9,9 +9,9 @@ import logger
 import org.apache.commons.math3.distribution.AbstractIntegerDistribution
 import org.apache.commons.math3.distribution.AbstractRealDistribution
 import ppp.filter.PointFilter
-import ppp.segmentation.Segment
-import ppp.segmentation.Segmentation
-import ppp.segmentation.SegmentationPoint
+import spaces.segmentation.Segment
+import spaces.segmentation.Segmentation
+import spaces.segmentation.SegmentationPoint
 
 /**
  * The [PoissonPointProcess] is constructed over the [segmentation] where each segment is assigned

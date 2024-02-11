@@ -1,6 +1,6 @@
 package spaces.metrics
 
-import spaces.spaces.PointAbstract
+import spaces.PointAbstract
 
 /**
  * Define a metric that operates on the underlying space that is used to measure the distance between two points.

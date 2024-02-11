@@ -1,6 +1,6 @@
 package sc.model
 
-import ppp.segmentation.SegmentationPoint
+import spaces.segmentation.SegmentationPoint
 
 /**
  * Represents a group of [vertices].

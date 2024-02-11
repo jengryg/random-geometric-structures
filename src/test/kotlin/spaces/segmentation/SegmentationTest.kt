@@ -1,4 +1,4 @@
-package ppp.segmentation
+package spaces.segmentation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy

@@ -1,11 +1,11 @@
-package ppp.segmentation
+package spaces.segmentation
 
 import Logging
 import logger
 import spaces.CombinatoricsGenerator
+import spaces.Space
 import spaces.minus
 import spaces.plus
-import spaces.spaces.Space
 
 /**
  * The segment is a unit sized box that belongs to the [segmentation] and is identified by its [basePosition] that is

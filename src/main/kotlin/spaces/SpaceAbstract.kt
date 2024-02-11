@@ -1,4 +1,4 @@
-package spaces.spaces
+package spaces
 
 /**
  * The basic interface for representation of a [dimension]-dimensional space, usually `\R^d`, i.e. the d-dimensional

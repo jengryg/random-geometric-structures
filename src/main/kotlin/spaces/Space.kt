@@ -1,4 +1,4 @@
-package spaces.spaces
+package spaces
 
 interface Space {
     val dimension: Int

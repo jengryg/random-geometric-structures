@@ -6,11 +6,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import logger
-import ppp.segmentation.Cluster
-import ppp.segmentation.Segment
-import ppp.segmentation.SegmentationPoint
 import sc.model.SimplexModel
 import spaces.metrics.Metric
+import spaces.segmentation.Cluster
+import spaces.segmentation.Segment
+import spaces.segmentation.SegmentationPoint
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.ceil
 

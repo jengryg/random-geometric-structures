@@ -4,9 +4,9 @@ import org.apache.commons.math3.distribution.PoissonDistribution
 import org.apache.commons.math3.distribution.UniformRealDistribution
 import ppp.PoissonPointProcess
 import ppp.filter.AllowAllPointFilter
-import ppp.segmentation.Segmentation
 import sc.VietorisRipsComplex
 import spaces.metrics.EuclideanMetric
+import spaces.segmentation.Segmentation
 
 object ExampleFigureGeneration {
     suspend fun poissonPointProcessStepConstruction() {

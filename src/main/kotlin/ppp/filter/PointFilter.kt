@@ -1,6 +1,6 @@
 package ppp.filter
 
-import ppp.segmentation.SegmentationPoint
+import spaces.segmentation.SegmentationPoint
 
 /**
  * Restrict the space that our points are generated on by indicating for each point if it belongs to the restricted

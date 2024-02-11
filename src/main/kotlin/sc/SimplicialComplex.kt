@@ -2,9 +2,9 @@ package sc
 
 import Logging
 import logger
-import ppp.segmentation.SegmentationPoint
 import sc.model.AdjacencyMatrix
 import sc.model.SimplexModel
+import spaces.segmentation.SegmentationPoint
 
 /**
  * Represents the basic simplicial complex constructed over [vertices] that are represented by [SegmentationPoint]

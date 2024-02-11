@@ -5,10 +5,10 @@ import OUTPUT_DIRECTORY
 import logger
 import org.apache.batik.dom.GenericDOMImplementation
 import org.apache.batik.svggen.SVGGraphics2D
-import ppp.segmentation.Segmentation
 import sc.model.SimplexModel
-import spaces.spaces.PointAbstract
-import spaces.spaces.SpaceAbstract
+import spaces.PointAbstract
+import spaces.SpaceAbstract
+import spaces.segmentation.Segmentation
 import java.awt.Color
 import java.awt.Font
 import java.nio.charset.StandardCharsets

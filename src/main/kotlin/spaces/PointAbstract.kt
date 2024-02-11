@@ -1,4 +1,4 @@
-package spaces.spaces
+package spaces
 
 /**
  * Simple base class to represent a Point in a specific space [S].

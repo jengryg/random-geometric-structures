@@ -1,6 +1,6 @@
 package ppp.filter
 
-import ppp.segmentation.SegmentationPoint
+import spaces.segmentation.SegmentationPoint
 
 /**
  * This filter will accept all points.

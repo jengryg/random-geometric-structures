@@ -4,8 +4,8 @@ import Logging
 import logger
 import org.apache.commons.math3.distribution.AbstractRealDistribution
 import ppp.filter.PointFilter
-import ppp.segmentation.Segment
-import ppp.segmentation.SegmentationPoint
+import spaces.segmentation.Segment
+import spaces.segmentation.SegmentationPoint
 
 /**
  * The [PoissonSegment] is constructed over the cube given by the [segment].

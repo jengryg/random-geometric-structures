@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import ppp.filter.AllowAllPointFilter
 import ppp.filter.RejectAllPointFilter
-import ppp.segmentation.Segmentation
+import spaces.segmentation.Segmentation
 
 class PoissonSegmentTest {
     private val segmentation = Segmentation(rangeLimits = arrayOf(0..1, 0..1))

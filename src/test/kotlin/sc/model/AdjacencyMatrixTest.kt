@@ -5,7 +5,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCode
 import org.junit.jupiter.api.Test
-import ppp.segmentation.SegmentationPoint
+import spaces.segmentation.SegmentationPoint
 
 class AdjacencyMatrixTest {
     /**
