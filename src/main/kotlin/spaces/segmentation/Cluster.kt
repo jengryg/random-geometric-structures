@@ -32,17 +32,13 @@ class Cluster(
     init {
         require(segments.isNotEmpty()) { "Cluster must contain at least one segment!" }
 
-        lowerBound = segments.let {
-            IntArray(dimension) { coordinateIndex ->
-                it.minOf { it.basePosition[coordinateIndex] }
-            }
+        lowerBound = IntArray(dimension) { coordinateIndex ->
+            segments.minOf { it.basePosition[coordinateIndex] }
         }
 
-        upperBound = segments.let {
-            IntArray(dimension) { coordinateIndex ->
-                segments.maxOf { it.basePosition[coordinateIndex] } + 1
-                // We need to add 1 to the position to account for the size of the segment cube itself.
-            }
+        upperBound = IntArray(dimension) { coordinateIndex ->
+            segments.maxOf { it.basePosition[coordinateIndex] } + 1
+            // We need to add 1 to the position to account for the size of the segment cube itself.
         }
 
         log.atDebug()

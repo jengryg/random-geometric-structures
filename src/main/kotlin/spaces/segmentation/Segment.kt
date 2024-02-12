@@ -1,7 +1,5 @@
 package spaces.segmentation
 
-import Logging
-import logger
 import spaces.Space
 import spaces.minus
 import spaces.plus
@@ -16,9 +14,7 @@ import spaces.plus
 class Segment(
     val segmentation: Segmentation,
     val basePosition: IntArray
-) : Space by segmentation, Logging {
-    private val log = logger()
-
+) : Space by segmentation {
     init {
         require(basePosition.size == dimension) { "The given base position is of a different dimension than the segmentation!" }
     }
