@@ -1,28 +1,34 @@
 package sc
 
-import Logging
-import logger
-import sc.model.AdjacencyMatrix
-import sc.model.SimplexModel
-import spaces.segmentation.SegmentationPoint
+import graph.Graph
+import spaces.segmentation.Point
 
 /**
- * Represents the basic simplicial complex constructed over [vertices] that are represented by [SegmentationPoint]
- * and the [simplicies] represented by [SimplexModel].
+ * Represents the basic simplicial complex constructed over [vertices] that are represented by [Point]
+ * and the [simplicies] represented by [Simplex]. Note: The complex will initialize the [simplexCollection] for given
+ * dimension `0` with one [Simplex] for each vertex given in [vertices].
  *
  * Geometric aspects of the underlying space are not considered in the base implementation.
  *
- * @param vertices the list of vertices of this simplicial complex.
+ * @param vertices the list of vertices of this simplicial complex
  */
 open class SimplicialComplex(
-    vertices: List<SegmentationPoint>
-) : GraphAbstract(vertices), Logging {
-    private val log = logger()
-
+    vertices: List<Point>
+) : Graph(
+    vertices.also { require(vertices.isNotEmpty()) { "SimplicialComplex must have at least one vertex!" } }
+) {
     /**
      * The simplicies that are in this simplicial complex.
+     * By default, each vertex of the complex is a `0`-dimensional simplex on its on.
      */
-    val simplicies: MutableMap<Int, MutableList<SimplexModel>> = mutableMapOf()
+    protected val simplicies: MutableMap<Int, MutableList<Simplex>> =
+        mutableMapOf<Int, MutableList<Simplex>>().also { sc ->
+            sc[0] = mutableListOf<Simplex>().also { zeroDims ->
+                vertices.forEachIndexed { index, point ->
+                    zeroDims.add(Simplex(id = index, vertices = listOf(point)))
+                }
+            }
+        }
 
     /**
      * The `f`-Vector contains the number of simplicies of the simplicial complex of each simplex dimension.
@@ -35,18 +41,28 @@ open class SimplicialComplex(
         }.toMap()
 
     /**
-     * Access the [simplicies] map and get the list of all [SimplexModel] with the given [dimension].
+     * Access the [simplicies] map and get the list of all [Simplex] with the given [dimension].
      * If the given [dimension] is not initialized in [simplicies], this method will initialize it as new [MutableList],
      * store it in the [simplicies] map and return the freshly generated list for further usage.
      */
-    protected fun simplexCollection(dimension: Int): MutableList<SimplexModel> {
-        return simplicies[dimension] ?: mutableListOf<SimplexModel>().also {
+    fun simplexCollection(dimension: Int): MutableList<Simplex> {
+        return simplicies[dimension] ?: mutableListOf<Simplex>().also {
             simplicies[dimension] = it
         }
     }
 
     /**
-     * Use the edges given in [simplicies] as `1`-dimensional [SimplexModel] to create the [AdjacencyMatrix] of this
+     * Adds the given [simplex] to this [SimplicialComplex].
+     *
+     * Note: This method is only a shortcut for [simplexCollection] called with the given simplexes dimension. It will
+     * not ensure the mathematical requirements of adding also all lower dimensional simplicies of [simplex].
+     */
+    fun addSimplex(simplex: Simplex) {
+        simplexCollection(simplex.simplexDimension).add(simplex)
+    }
+
+    /**
+     * Use the edges given in [simplicies] as `1`-dimensional [Simplex] to create the adjacency matrix of this
      * simplicial complex.
      */
     open fun calculateAdjacencyMatrix() {

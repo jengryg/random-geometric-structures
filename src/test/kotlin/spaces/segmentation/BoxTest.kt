@@ -1,4 +1,4 @@
-package sc.model
+package spaces.segmentation
 
 import io.mockk.every
 import io.mockk.mockk
@@ -8,12 +8,11 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
-import spaces.segmentation.Cluster
 import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class BoxModelTest {
-    val box = BoxModel(
+class BoxTest {
+    private val box = Box(
         intervals = listOf(
             -1.1..1.2,
             -2.5..2.1,
@@ -58,7 +57,6 @@ class BoxModelTest {
             Arguments.of(
                 intArrayOf(-2, -3, -4), intArrayOf(2, 3, 4), true
             ),
-
             Arguments.of(
                 intArrayOf(-1, -3, -4), intArrayOf(2, 3, 4), false
             ),
@@ -77,12 +75,9 @@ class BoxModelTest {
             Arguments.of(
                 intArrayOf(-2, -3, -4), intArrayOf(2, 3, 3), false
             ),
-
             Arguments.of(
                 intArrayOf(5, 5, 5), intArrayOf(10, 10, 10), false
             ),
-
-
-            )
+        )
     }
 }

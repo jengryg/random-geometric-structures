@@ -8,6 +8,11 @@ open class Graph(
 ) : Space by vertices.firstOrNull() ?: throw IllegalArgumentException("Graph must have at least one vertex!") {
 
     /**
+     * The underlying segmentation of the given [vertices].
+     */
+    val segmentation = vertices.first().segment.segmentation
+
+    /**
      * Map the [Point.id] to each [Point] for faster lookup of points using their id.
      */
     val pointsById = vertices.associateBy { it.id }
