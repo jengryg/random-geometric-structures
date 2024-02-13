@@ -1,6 +1,7 @@
 package figures
 
 import ppp.PoissonPointProcess
+import spaces.segmentation.Segmentation
 import spaces.toDoubleArray
 import svg.DVIPSColors
 import svg.SVGImage
@@ -83,6 +84,32 @@ class PoissonPointProcessStepConstruction(
 
             poissonPointProcess.allPoints.values.forEach {
                 svgImage.circle(center = it.absolute, radius = 0.03, filled = true)
+            }
+        }
+    }
+
+    companion object {
+        /**
+         * Simple example visualizing the step based construction of a [PoissonPointProcess].
+         */
+        suspend fun example(): PoissonPointProcessStepConstruction {
+            val segmentation = Segmentation(
+                rangeLimits = arrayOf(
+                    (0..16), (0..9)
+                )
+            )
+
+            val ppp = PoissonPointProcess.simple(
+                segmentation = segmentation,
+                intensity = 5.0
+            ).apply {
+                generate()
+            }
+
+            return PoissonPointProcessStepConstruction(
+                poissonPointProcess = ppp,
+            ).apply {
+                constructFigure()
             }
         }
     }

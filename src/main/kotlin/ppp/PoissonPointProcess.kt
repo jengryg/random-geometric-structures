@@ -8,6 +8,9 @@ import kotlinx.coroutines.withContext
 import logger
 import org.apache.commons.math3.distribution.AbstractIntegerDistribution
 import org.apache.commons.math3.distribution.AbstractRealDistribution
+import org.apache.commons.math3.distribution.PoissonDistribution
+import org.apache.commons.math3.distribution.UniformRealDistribution
+import ppp.filter.AcceptAllPointFilter
 import ppp.filter.PointFilter
 import spaces.segmentation.Point
 import spaces.segmentation.Segment
@@ -120,5 +123,29 @@ class PoissonPointProcess(
             .addKeyValue("acceptedPoints.size", acceptedPoints.size)
             .addKeyValue("rejectedPoints.size", rejectedPoints.size)
             .log()
+    }
+
+    companion object {
+        /**
+         * Generates a [PoissonPointProcess] with constant [intensity] for all segments in [Segmentation], using the
+         * [PoissonDistribution] for the point numbers and the [UniformRealDistribution] for the positions.
+         *
+         * @param segmentation the underlying [Segmentation] this process should be generated on
+         * @param intensity the average number of points per segment used as parameter for the [PoissonDistribution]
+         *
+         * @return initialized but not yet generated [PoissonPointProcess] on [Segmentation] with [intensity]
+         */
+        fun simple(segmentation: Segmentation, intensity: Double): PoissonPointProcess {
+            val pointDistribution = PoissonDistribution(intensity)
+            val uniformRealDistribution = UniformRealDistribution()
+            val pointFilter = AcceptAllPointFilter()
+
+            return PoissonPointProcess(
+                segmentation = segmentation,
+                countDistributionAssigner = { pointDistribution },
+                positionDistributionAssigner = { uniformRealDistribution },
+                pointFilterAssigner = { pointFilter }
+            )
+        }
     }
 }

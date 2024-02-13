@@ -1,6 +1,9 @@
 package figures
 
+import ppp.PoissonPointProcess
 import sc.VietorisRipsComplex
+import spaces.Metrics
+import spaces.segmentation.Segmentation
 import svg.DVIPSColors
 import svg.DVIPSColors.withAlpha
 import svg.SVGImage
@@ -111,6 +114,42 @@ class VietorisRipsComplexStepConstruction(
             svgImage.fontSize(12)
             vietorisRipsComplex.vertices.forEach {
                 svgImage.write(it.id.toString(), it.absolute + DoubleArray(it.absolute.size) { 0.025 })
+            }
+        }
+    }
+
+    companion object {
+        /**
+         * Simple example visualizing the step based construction of a [VietorisRipsComplex].
+         */
+        suspend fun example(): VietorisRipsComplexStepConstruction {
+            val segmentation = Segmentation(
+                rangeLimits = arrayOf(
+                    (0..3), (0..3)
+                )
+            )
+
+            val ppp = PoissonPointProcess.simple(
+                segmentation = segmentation,
+                intensity = 5.0
+            ).apply {
+                generate()
+            }
+
+            val vrc = VietorisRipsComplex(
+                vertices = ppp.acceptedPoints.values.toList(),
+                distance = Metrics::squaredEuclidean,
+                delta = 0.75,
+                clusterExtension = 2
+            ).apply {
+                calculateAdjacencyMatrix()
+                generate()
+            }
+
+            return VietorisRipsComplexStepConstruction(
+                vietorisRipsComplex = vrc
+            ).apply {
+                constructFigure()
             }
         }
     }
