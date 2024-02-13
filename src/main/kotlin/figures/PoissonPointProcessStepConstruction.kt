@@ -11,7 +11,8 @@ class PoissonPointProcessStepConstruction(
     private val figures = Array(4) {
         SVGImage(
             baseName = "${this::class.simpleName}_$it",
-            segmentation = poissonPointProcess.segmentation
+            xRange = poissonPointProcess.segmentation.rangeLimits[0],
+            yRange = poissonPointProcess.segmentation.rangeLimits[1]
         )
     }
 
@@ -39,8 +40,8 @@ class PoissonPointProcessStepConstruction(
             } else {
                 svgImage.color(DVIPSColors.Transparent)
             }
+            svgImage.grid()
 
-            svgImage.segmentation(segmentation = poissonPointProcess.segmentation)
             // To ensure that all svg can be layered in the presentations, the grid is drawn on each figure.
             // When it should not be displayed, we draw it in Transparent.
         }

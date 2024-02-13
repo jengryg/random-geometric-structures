@@ -21,7 +21,7 @@ open class SimplicialComplex(
      * The simplicies that are in this simplicial complex.
      * By default, each vertex of the complex is a `0`-dimensional simplex on its on.
      */
-    protected val simplicies: MutableMap<Int, MutableList<Simplex>> =
+    val simplicies: MutableMap<Int, MutableList<Simplex>> =
         mutableMapOf<Int, MutableList<Simplex>>().also { sc ->
             sc[0] = mutableListOf<Simplex>().also { zeroDims ->
                 vertices.forEachIndexed { index, point ->

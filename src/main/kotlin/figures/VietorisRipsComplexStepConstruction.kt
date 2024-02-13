@@ -12,7 +12,8 @@ class VietorisRipsComplexStepConstruction(
     private val figures = Array(5) {
         SVGImage(
             baseName = "${this::class.simpleName}_$it",
-            segmentation = vietorisRipsComplex.segmentation
+            xRange = vietorisRipsComplex.segmentation.rangeLimits[0],
+            yRange = vietorisRipsComplex.segmentation.rangeLimits[1]
         )
     }
 
@@ -44,7 +45,7 @@ class VietorisRipsComplexStepConstruction(
             }
 
             vietorisRipsComplex.vertices.forEach {
-                svgImage.circle(it, vietorisRipsComplex.delta / 2, filled = true)
+                svgImage.circle(it.absolute, vietorisRipsComplex.delta / 2, filled = true)
                 // To ensure that all svg can be layered in the presentations, the grid is drawn on each figure.
                 // When it should not be displayed, we draw it in Transparent.
             }
@@ -65,7 +66,7 @@ class VietorisRipsComplexStepConstruction(
             vietorisRipsComplex.simplicies.forEach { (dim, list) ->
                 if (dim >= 2) {
                     list.forEach {
-                        svgImage.simplex(it)
+                        svgImage.polygon(it.vertices.map { it.absolute })
                     }
                 }
             }
@@ -84,7 +85,7 @@ class VietorisRipsComplexStepConstruction(
             }
 
             vietorisRipsComplex.simplicies[1]?.forEach {
-                svgImage.line(it.vertices[0], it.vertices[1])
+                svgImage.line(it.vertices[0].absolute, it.vertices[1].absolute)
             }
         }
     }
@@ -97,7 +98,7 @@ class VietorisRipsComplexStepConstruction(
             svgImage.color(DVIPSColors.Black)
 
             vietorisRipsComplex.vertices.forEach {
-                svgImage.circle(center = it, radius = 0.03, filled = true)
+                svgImage.circle(center = it.absolute, radius = 0.03, filled = true)
             }
         }
     }

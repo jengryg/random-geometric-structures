@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class VietorisRipsComplex(
     vertices: List<Point>,
     private val distance: (Point, Point) -> Double,
-    private val delta: Double,
+    val delta: Double,
     private val clusterExtension: Int
 ) : SimplicialComplex(vertices), Logging {
     private val log = logger()

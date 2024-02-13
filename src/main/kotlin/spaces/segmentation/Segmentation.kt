@@ -16,7 +16,7 @@ import kotlin.math.floor
  * one dimension of the space.
  */
 class Segmentation(
-    private val rangeLimits: Array<IntRange>,
+    val rangeLimits: Array<IntRange>,
 ) : Space, Logging {
     private val log = logger()
 

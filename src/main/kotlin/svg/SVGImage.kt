@@ -1,14 +1,9 @@
 package svg
 
 import Logging
-import OUTPUT_DIRECTORY
 import logger
 import org.apache.batik.dom.GenericDOMImplementation
 import org.apache.batik.svggen.SVGGraphics2D
-import sc.model.SimplexModel
-import spaces.PointAbstract
-import spaces.SpaceAbstract
-import spaces.segmentation.Segmentation
 import java.awt.Color
 import java.awt.Font
 import java.nio.charset.StandardCharsets
@@ -49,21 +44,6 @@ class SVGImage(
 ) : Logging {
     private val log = logger()
 
-    constructor(
-        pixelPerUnit: Int = 100,
-        xIndex: Int = 0,
-        yIndex: Int = 1,
-        baseName: String = "",
-        segmentation: Segmentation,
-    ) : this(
-        pixelPerUnit = pixelPerUnit,
-        xIndex = xIndex,
-        yIndex = yIndex,
-        baseName = baseName,
-        xRange = segmentation.rangeLimits[xIndex],
-        yRange = segmentation.rangeLimits[yIndex]
-    )
-
     private val doc = GenericDOMImplementation
         .getDOMImplementation()
         .createDocument("https://www.w3.org/2000/svg", "svg", null)
@@ -72,24 +52,9 @@ class SVGImage(
 
     private val creationStamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).replace(":", "-")
 
-    /**
-     * Set the color of the underlying [svg] to [DVIPSColors.Black].
-     * Set the font of the underlying [svg] to size 26 plain TimesRoman.
-     */
-    fun defaults() {
+    init {
         svg.color = DVIPSColors.Black
         svg.font = Font("TimesRoman", Font.PLAIN, 26)
-    }
-
-    /**
-     * Set the font size of the underlying [svg] to the given [size].
-     */
-    fun fontSize(size: Int) {
-        svg.font = Font(svg.font.name, svg.font.style, size)
-    }
-
-    init {
-        defaults()
 
         log.atDebug()
             .setMessage("Initialized SvgImage.")
@@ -104,82 +69,68 @@ class SVGImage(
     }
 
     /**
+     * Set the font size of the underlying [svg] to the given [size].
+     */
+    fun fontSize(size: Int) {
+        svg.font = Font(svg.font.name, svg.font.style, size)
+    }
+
+    /**
+     * Set the current drawing color of the underlying [svg] to the given [color].
+     */
+    fun color(color: Color) {
+        svg.color = color
+    }
+
+    /**
      * Incremented every time the [export] method is used to enumerate the files when no specific filename is given to
      * the [export] method.
      */
     private var exportId = 0
 
     /**
-     * Create a svg file with the current state of this image.
-     *
-     * Use this method with [name] set to null, for auto-enumeration of the exported files using the default file name
-     * ```kotlin
-     * "${baseName}_${creationStamp}_${exportId++}.svg"
-     * ```
-     *
-     * @param name the name for the file without .svg extension, or null to use the default.
-     *
-     * @return chainable this
+     * Export the current drawings using [SVGGraphics2D.stream] to the given [java.io.OutputStreamWriter].
      */
-    fun export(name: String? = null) {
-        when {
+    fun export(name: String? = null, directory: String = "output"): Path {
+        return when {
             name.isNullOrBlank() -> "${baseName}_${exportId++}_${creationStamp}_${UUID.randomUUID()}.svg"
             else -> "${name}.svg"
         }.let { fileName ->
-            Path.of(OUTPUT_DIRECTORY, fileName)
-                .writer(StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)
-                .use { osw ->
-                    svg.stream(osw, false)
-                }
+            Path.of(directory, fileName).also {
+                it.writer(StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)
+                    .use { osw ->
+                        svg.stream(osw, false)
+                    }
 
-            log.atDebug()
-                .setMessage("Saved SvgImage")
-                .addKeyValue("fileName", fileName)
-                .log()
+                log.atDebug()
+                    .setMessage("Saved SvgImage")
+                    .addKeyValue("fileName", fileName)
+                    .log()
+            }
         }
     }
 
-    fun color(color: Color) {
-        svg.color = color
-    }
-
-    fun font(font: Font) {
-        svg.font = font
-    }
-
     /**
-     * Value conversion from [Double] to the [Int] based pixel value the [svg] uses.
-     *
-     * @return the pixel value of the given [value] by applying [pixelPerUnit] scaling.
+     * Draw the horizontal and vertical lines through the points with integer coordinates in the rectangle given by
+     * [xRange] horizontally and [yRange] vertically.
      */
-    private fun pV(value: Double) = (value * pixelPerUnit).roundToInt()
-
-    /**
-     * The x-coordinate linear transformation to map a cartesian coordinate system to the svg grid.
-     * The svg grid has `(0,0)` in the top left corner and `(width, height)` in the bottom right corner.
-     *
-     * Since we want to have a linear transformation for the x coordinate, that is independent of the y coordinate, this
-     * map has the form `Tx(v) = v * m + b`, where `m` is the slope and `b` is the offset in `v = 0`.
-     *
-     * The positions of the corners require that `Tx(minX) = 0` and `Tx(maxX) = maxX - minX`, thus it follows that
-     * `Tx(v) = v * 1 - minX`.
-     */
-    private fun transformationX(value: Double): Double {
-        return value - xRange.first
-    }
-
-    /**
-     * The y-coordinate linear transformation to map a cartesian coordinate system to the svg grid.
-     * The svg grid has `(0,0)` in the top left corner and `(width, height)` in the bottom right corner.
-     *
-     * Since we want to have a linear transformation for the y coordinate, that is independent of the x coordinate, this
-     * map has the form `Ty(v) = v * m + b`, where `m` is the slope and `b` is the offset in `v = 0`.
-     *
-     * The positions of the corners require that `Ty(maxY) = 0` and `Ty(minY) = maxY - minY`, thus it follows that
-     * `Ty(v) = v * (-1) + maxX`.
-     */
-    private fun transformationY(value: Double): Double {
-        return yRange.last - value
+    fun grid() {
+        xRange.forEach {
+            line(
+                startX = it.toDouble(),
+                startY = yRange.first.toDouble(),
+                endX = it.toDouble(),
+                endY = yRange.last.toDouble()
+            )
+        }
+        yRange.forEach {
+            line(
+                startX = xRange.first.toDouble(),
+                startY = it.toDouble(),
+                endX = xRange.last.toDouble(),
+                endY = it.toDouble()
+            )
+        }
     }
 
     /**
@@ -207,16 +158,6 @@ class SVGImage(
     }
 
     /**
-     * Draw a circle with midpoint in [center] and radius given by [radius].
-     *
-     * If [filled] is set to true, the circle is filled with the current drawing color of the [svg],
-     * otherwise only the outline is drawn in that color and the shape itself is transparent.
-     */
-    fun <S : SpaceAbstract> circle(center: PointAbstract<S>, radius: Double, filled: Boolean = true) {
-        circle(center = center.absolute, radius = radius, filled = filled)
-    }
-
-    /**
      * Draw a rectangle with [lowerBounds] and [upperBounds].
      *
      * If [filled] is set to true, the rectangle is filled with the current drawing color of the [svg],
@@ -241,20 +182,6 @@ class SVGImage(
     }
 
     /**
-     * Draw a rectangle with [lowerBounds] and [upperBounds].
-     *
-     * If [filled] is set to true, the rectangle is filled with the current drawing color of the [svg],
-     * otherwise only the outline is drawn in that color and the shape itself is transparent.
-     */
-    fun <S : SpaceAbstract> rectangle(
-        lowerBounds: PointAbstract<S>,
-        upperBounds: PointAbstract<S>,
-        filled: Boolean = true
-    ) {
-        rectangle(lowerBounds = lowerBounds.absolute, upperBounds = upperBounds.absolute, filled = filled)
-    }
-
-    /**
      * Draws a line from [startPoint] to [endPoint].
      */
     fun line(startPoint: DoubleArray, endPoint: DoubleArray) {
@@ -264,13 +191,6 @@ class SVGImage(
             pV(transformationX(endPoint[xIndex])),
             pV(transformationY(endPoint[yIndex]))
         )
-    }
-
-    /**
-     * Draws a line from [startPoint] to [endPoint].
-     */
-    fun <S : SpaceAbstract> line(startPoint: PointAbstract<S>, endPoint: PointAbstract<S>) {
-        line(startPoint = startPoint.absolute, endPoint = endPoint.absolute)
     }
 
     /**
@@ -285,28 +205,6 @@ class SVGImage(
             pV(transformationX(endX)),
             pV(transformationY(endY))
         )
-    }
-
-    /**
-     * Draw the grid for the given [segmentation].
-     */
-    fun segmentation(segmentation: Segmentation) {
-        xRange.forEach {
-            line(
-                startX = it.toDouble(),
-                startY = yRange.first.toDouble(),
-                endX = it.toDouble(),
-                endY = yRange.last.toDouble()
-            )
-        }
-        yRange.forEach {
-            line(
-                startX = xRange.first.toDouble(),
-                startY = it.toDouble(),
-                endX = xRange.last.toDouble(),
-                endY = it.toDouble()
-            )
-        }
     }
 
     /**
@@ -351,13 +249,39 @@ class SVGImage(
         }
     }
 
+
     /**
-     * Draw a polygon given by the vertices of the [simplex].
+     * Value conversion from [Double] to the [Int] based pixel value the [svg] uses.
      *
-     * If [filled] is set to true, the polygon is filled with the current drawing color of the [svg],
-     * otherwise only the outline is drawn in that color and the shape itself is transparent.
+     * @return the pixel value of the given [value] by applying [pixelPerUnit] scaling.
      */
-    fun simplex(simplex: SimplexModel, filled: Boolean = true) {
-        polygon(simplex.vertices.map { it.absolute }, filled)
+    private fun pV(value: Double) = (value * pixelPerUnit).roundToInt()
+
+    /**
+     * The x-coordinate linear transformation to map a cartesian coordinate system to the svg grid.
+     * The svg grid has `(0,0)` in the top left corner and `(width, height)` in the bottom right corner.
+     *
+     * Since we want to have a linear transformation for the x coordinate, that is independent of the y coordinate, this
+     * map has the form `Tx(v) = v * m + b`, where `m` is the slope and `b` is the offset in `v = 0`.
+     *
+     * The positions of the corners require that `Tx(minX) = 0` and `Tx(maxX) = maxX - minX`, thus it follows that
+     * `Tx(v) = v * 1 - minX`.
+     */
+    private fun transformationX(value: Double): Double {
+        return value - xRange.first
+    }
+
+    /**
+     * The y-coordinate linear transformation to map a cartesian coordinate system to the svg grid.
+     * The svg grid has `(0,0)` in the top left corner and `(width, height)` in the bottom right corner.
+     *
+     * Since we want to have a linear transformation for the y coordinate, that is independent of the x coordinate, this
+     * map has the form `Ty(v) = v * m + b`, where `m` is the slope and `b` is the offset in `v = 0`.
+     *
+     * The positions of the corners require that `Ty(maxY) = 0` and `Ty(minY) = maxY - minY`, thus it follows that
+     * `Ty(v) = v * (-1) + maxX`.
+     */
+    private fun transformationY(value: Double): Double {
+        return yRange.last - value
     }
 }
