@@ -6,55 +6,54 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import logger
-import sc.model.SimplexModel
-import spaces.metrics.Metric
 import spaces.segmentation.Cluster
+import spaces.segmentation.Point
 import spaces.segmentation.Segment
-import spaces.segmentation.SegmentationPoint
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.ceil
 
 /**
  * Representation of the Vietoris-Rips (simplicial) complex.
  *
- * Provides an algorithm to construct the Vietoris-Rips complex of a given list of [SegmentationPoint] that are used as
- * vertices using [delta] as distance limiting parameter and the [metric] to calculate the distance of two vertices.
+ * Provides an algorithm to construct the Vietoris-Rips complex of a given list of [Point] that are used as vertices,
+ * and [delta] is used as distance limiting parameter for the [distance] evaluated on pairs of points.
  *
  * See [Vietoris-Rips Complex](https://en.wikipedia.org/wiki/Vietoris%E2%80%93Rips_complex) fore more information.
  *
+ * The [clusterExtension] should be set to the smallest positive integer, such that the distance between any point
+ * inside a segment and all other points outside the neighborhood is larger than delta. The [distance] < [delta]
+ * condition is only evaluated for pairs of vertices (x,y) where x is in a fixed segment and y is from the cluster of
+ * this segment to reduce the amount of evaluations.
+ *
  * @param vertices all vertices that can be used to construct the Vietoris-Rips complex
- * @param metric the underlying metric that is used to check the distance between vertices
- * @param delta the distance threshold, i.e. a set of vertices forms a simplex if and only if every pair of points has
- * distance smaller than [delta].
+ * @param distance method that returns the distance of two points
+ * @param delta the distance threshold, i.e. a set of vertices forms a simplex if and only if every pair of vertices in
+ * this simplex has the [distance] smaller [delta].
+ * @param clusterExtension performance parameter, set this to the smallest positive integer, such that the distance
+ * between any point inside a segment and all other points outside the neighborhood is larger than [delta].
  */
 class VietorisRipsComplex(
-    vertices: List<SegmentationPoint>,
-    val metric: Metric,
-    val delta: Double
+    vertices: List<Point>,
+    private val distance: (Point, Point) -> Double,
+    private val delta: Double,
+    private val clusterExtension: Int
 ) : SimplicialComplex(vertices), Logging {
     private val log = logger()
 
     /**
-     * The segments of the underlying segmentation are cubes of width 1.
-     * We [ceil] the distance parameter [delta] to get the number of segments we need to extend for the algorithm.
-     */
-    private val clusterExtension = ceil(delta).toInt()
-
-    /**
-     * Map the [Segment] to its neighborhood [Cluster] to avoid the recalculation of the neighborhoods in the [generate]
+     * Map the [Segment] to its neighborhood [Cluster] to avoid recalculation of the neighborhoods in the [generate]
      * algorithm.
      *
-     * The neighborhood [Cluster] of a given [Segment] is composed of all segments in the segmentation that are at most
-     * clusterExtension far away from the given [Segment]. If we select a point from the given [Segment] all points
-     * outside of this neighborhood cluster are already rejected as possible candidates to form an edge with the
-     * selected point by construction, since their distance is least [clusterExtension] far away.
+     * The neighborhood [Cluster] of a given [Segment] is composed of all segments in the [segmentation] that are at
+     * most [clusterExtension] far away from the given [Segment]. If we select a point from the given [Segment] all
+     * points outside of this neighborhood cluster are already rejected as possible candidates to form an edge with the
+     * selected point by construction, since their distance is at least [clusterExtension] far away.
      */
     private val neighbourhoodOfSegment: Map<Segment, Cluster> =
-        pointsBySegment.keys.associateWith { it.neighborhood(clusterExtension) }
+        pointsBySegment.keys.associateWith { segmentation.neighborhood(it, clusterExtension) }
 
     /**
      * In the Vietoris-Rips complex, two vertices are considered to be adjacent if their distance is smaller than the
-     * given [delta]. The distance is calculated using the [metric] assigned to this [VietorisRipsComplex].
+     * given [delta]. The distance is calculated using the [distance] assigned to this [VietorisRipsComplex].
      */
     override fun calculateAdjacencyMatrix() {
         adjacencyMatrix.reset()
@@ -72,7 +71,7 @@ class VietorisRipsComplex(
                     if (x.id < y.id) {
                         // Since we only consider undirected connections, we only need to check the x.id < y.id
                         // combinations.
-                        adjacencyMatrix.set(x, y, metric.distance(x, y) < delta)
+                        adjacencyMatrix.set(x, y, distance(x, y) < delta)
                     }
                 }
             }
@@ -82,6 +81,28 @@ class VietorisRipsComplex(
             .setMessage("Vietoris-Rips AdjacencyMatrix calculated")
             .addKeyValue("connections") { adjacencyMatrix.count() }
             .log()
+    }
+
+    /**
+     * Use the segmentation construction with the [neighbourhoodOfSegment] to determine all points that are close enough
+     * to the given [segment] so that they could form an edge with the points inside it. The points returned by this
+     * method are not guaranteed to form an edge, but **all points that are not returned by this method can never form
+     * an edge since they are too far away by construction**.
+     *
+     * @param segment the candidate points can form an edge with the points in this given [Segment]
+     *
+     * @return a list of points that can (but not must) form an edge with the points from [segment]
+     */
+    private fun getCandidatePointsForSegment(segment: Segment): List<Point> {
+        return neighbourhoodOfSegment[segment]!!.segments.mapNotNull {
+            pointsBySegment[it]
+        }.flatten().sortedBy { it.id }.also {
+            log.atTrace()
+                .setMessage("Candidate points in neighborhood")
+                .addKeyValue("neighborhoodOf", segment.basePosition.contentToString())
+                .addKeyValue("candidates.size", it.size)
+                .log()
+        }
     }
 
     /**
@@ -100,9 +121,10 @@ class VietorisRipsComplex(
      * fast in the number of vertices. Since we store all simplicies that were calculated in [simplicies], the RAM
      * consumption can quickly exceed the available memory.
      *
-     * @param upToDimension the optional limit on the dimension of what simplicies to calculate
+     * @param upToDimension the optional limit of the dimension of what simplicies to calculate
      */
     suspend fun generate(upToDimension: Int? = null) {
+        require(upToDimension == null || upToDimension >= 0) { "VietorisRipsComplex generation upToDimension can not be negative." }
         val maxDimension = when (upToDimension) {
             null -> vertices.size - 1
             // since you need `n+1` vertices to build a simplex with dimension `n`, the total number of vertices minus
@@ -146,9 +168,9 @@ class VietorisRipsComplex(
 
     /**
      * The method initializes an internal counter at 0 and returns the state of the counter at the end. The counter is
-     * used for the [SimplexModel.id] enumeration.
+     * used for the [Simplex.id] enumeration.
      *
-     * @return the value to use for the next [SimplexModel.id]
+     * @return the value to use for the next [Simplex.id]
      */
     private fun findZeroDimensionalSimplicies(): Int {
         // Running counter to assign a unique id to each simplex we find.
@@ -156,11 +178,14 @@ class VietorisRipsComplex(
         var simplexId = 0
 
         // 0-dim simplicies are the vertices themselves
-        val collection = simplexCollection(0)
+        val collection = simplexCollection(0).apply {
+            clear()
+            // ensure that the collection is empty
+        }
 
         vertices.forEach { point ->
             collection.add(
-                SimplexModel(id = simplexId++, vertices = listOf(point)).also {
+                Simplex(id = simplexId++, vertices = listOf(point)).also {
                     log.atTrace()
                         .setMessage("Simplex constructed")
                         .addKeyValue("id", it.id)
@@ -184,11 +209,11 @@ class VietorisRipsComplex(
 
     /**
      * The [initialCounterValue] is used as starting value for an internal counter in this method and the state of the
-     * counter is returned at the end. The counter is used for the [SimplexModel.id] enumeration.
+     * counter is returned at the end. The counter is used for the [Simplex.id] enumeration.
      *
-     * @param initialCounterValue the value to use for the next [SimplexModel.id]
+     * @param initialCounterValue the value to use for the next [Simplex.id]
      *
-     * @return the value to use for the next [SimplexModel.id]
+     * @return the value to use for the next [Simplex.id]
      */
     private suspend fun findTwoDimensionalSimplicies(initialCounterValue: Int): Int {
         // Running counter to assign a unique id to each simplex we find.
@@ -203,7 +228,7 @@ class VietorisRipsComplex(
                     // We iterate over each segment since we can use the cluster extension to reduce the number of possible
                     // candidates that can form a simplex with the selected point.
 
-                    val collector = mutableListOf<SimplexModel>()
+                    val collector = mutableListOf<Simplex>()
 
                     /**
                      * Get the list of points that can form an edge with the points from [coreSegment].
@@ -214,7 +239,7 @@ class VietorisRipsComplex(
 
                     corePoints.forEach { x ->
                         val startingIndex = candidates.indexOf(x).also {
-                            assert(it < 0) { "Could not determine the starting index of point #${x.id}" }
+                            require(it >= 0) { "Could not determine the starting index of point #${x.id}" }
                             // If x can not be found in candidates, the found index is -1.
                             // By construction, x must be found in the candidates list itself.
                         }
@@ -226,7 +251,7 @@ class VietorisRipsComplex(
                                 if (adjacencyMatrix.get(x, y)) {
                                     // If these vertices are adjacent, they form an edge, which is a 1-dimensional simplex.
                                     collector.add(
-                                        SimplexModel(
+                                        Simplex(
                                             id = simplexId.incrementAndGet(),
                                             vertices = listOf(x, y)
                                         ).also {
@@ -266,11 +291,11 @@ class VietorisRipsComplex(
 
     /**
      * The [initialCounterValue] is used as starting value for an internal counter this method and the state of the
-     * counter is returned at the end. The counter is used for the [SimplexModel.id] enumeration.
+     * counter is returned at the end. The counter is used for the [Simplex.id] enumeration.
      *
-     * @param initialCounterValue the value to use for the next [SimplexModel.id]
+     * @param initialCounterValue the value to use for the next [Simplex.id]
      *
-     * @return the value to use for the next [SimplexModel.id]
+     * @return the value to use for the next [Simplex.id]
      */
     private suspend fun constructHigherDimensionalSimplicies(targetDimension: Int, initialCounterValue: Int): Int {
         val simplexId = AtomicInteger(initialCounterValue)
@@ -284,8 +309,13 @@ class VietorisRipsComplex(
                     // We iterate over each segment since we can use the cluster extension to reduce the number of possible
                     // candidates that can form a simplex with the selected point.
 
-                    val collector = mutableListOf<SimplexModel>()
+                    val collector = mutableListOf<Simplex>()
 
+                    /**
+                     * Get the list of simplicies that can form a larger simplex with the points from [coreSegment].
+                     * The usage of the [Segment] can reduce the amount of potential candidates greatly, depending on
+                     * the size of [delta] and the number of [Segment] the points are distributed across.
+                     */
                     /**
                      * Get the list of simplicies that can form a larger simplex with the points from [coreSegment].
                      * The usage of the [Segment] can reduce the amount of potential candidates greatly, depending on
@@ -299,7 +329,7 @@ class VietorisRipsComplex(
                                 // The vertex is not part of the simplex already, and it is connected to each vertex of the
                                 // simplex.
                                 collector.add(
-                                    SimplexModel(
+                                    Simplex(
                                         id = simplexId.incrementAndGet(),
                                         vertices = mutableListOf(p).also { it.addAll(simplex.vertices) }.toList()
                                             .sortedBy { it.id }
@@ -338,28 +368,6 @@ class VietorisRipsComplex(
     }
 
     /**
-     * Use the segmentation construction with the [neighbourhoodOfSegment] to determine all points that are close enough
-     * to the given [segment] so that they could form an edge with the points inside it. The points returned by this
-     * method are not guaranteed to form an edge, but **all points that are not returned by this method can never form
-     * an edge since they are too far away by construction**.
-     *
-     * @param segment the candidate points can form an edge with the points in this given [Segment]
-     *
-     * @return a list of points that can (but not must) form an edge with the points from [segment]
-     */
-    private fun getCandidatePointsForSegment(segment: Segment): List<SegmentationPoint> {
-        return neighbourhoodOfSegment[segment]!!.segments.mapNotNull {
-            pointsBySegment[it]
-        }.flatten().sortedBy { it.id }.also {
-            log.atTrace()
-                .setMessage("Candidate points in neighborhood")
-                .addKeyValue("neighborhoodOf", segment.basePosition.contentToString())
-                .addKeyValue("candidates.size", it.size)
-                .log()
-        }
-    }
-
-    /**
      * Use the segmentation construction with the [neighbourhoodOfSegment] to determine all simplicies of the given
      * [supply] that could form a larger simplex with the one of the points inside the given [segment]. The simplicies
      * returned by this method are not guaranteed to form a new larger simplex, but all simplicies that are not returned
@@ -368,9 +376,9 @@ class VietorisRipsComplex(
      * @param segment the candidate simplicies can form a larger simplex with the points in this given [segment]
      * @param supply the list of simplicies that the candidates are taken from
      *
-     * @return a list of [SimplexModel] that can (but not must) form a larger simplex with the points from [segment]
+     * @return a list of [Simplex] that can (but not must) form a larger simplex with the points from [segment]
      */
-    private fun getCandidateSimpliciesForSegment(segment: Segment, supply: List<SimplexModel>): List<SimplexModel> {
+    private fun getCandidateSimpliciesForSegment(segment: Segment, supply: List<Simplex>): List<Simplex> {
         return neighbourhoodOfSegment[segment]!!.let { cluster ->
             supply.filter { it.containedIn(cluster) }
             // All simplicies that have all their points in the neighborhood of this segment are candidates to form an

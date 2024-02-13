@@ -81,7 +81,7 @@ class PoissonPointProcessStepConstruction(
             }
 
             poissonPointProcess.allPoints.values.forEach {
-                svgImage.circle(center = it, radius = 0.03, filled = true)
+                svgImage.circle(center = it.absolute, radius = 0.03, filled = true)
             }
         }
     }

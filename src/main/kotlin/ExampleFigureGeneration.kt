@@ -3,9 +3,9 @@ import figures.VietorisRipsComplexStepConstruction
 import org.apache.commons.math3.distribution.PoissonDistribution
 import org.apache.commons.math3.distribution.UniformRealDistribution
 import ppp.PoissonPointProcess
-import ppp.filter.AllowAllPointFilter
+import ppp.filter.AcceptAllPointFilter
 import sc.VietorisRipsComplex
-import spaces.metrics.EuclideanMetric
+import spaces.Metrics
 import spaces.segmentation.Segmentation
 
 object ExampleFigureGeneration {
@@ -18,7 +18,7 @@ object ExampleFigureGeneration {
 
         val pointDistribution = PoissonDistribution(5.0)
         val uniformDistribution = UniformRealDistribution()
-        val pointFilter = AllowAllPointFilter()
+        val pointFilter = AcceptAllPointFilter()
 
         val ppp = PoissonPointProcess(
             segmentation = segmentation,
@@ -43,7 +43,7 @@ object ExampleFigureGeneration {
 
         val pointDistribution = PoissonDistribution(5.0)
         val uniformRealDistribution = UniformRealDistribution()
-        val pointFilter = AllowAllPointFilter()
+        val pointFilter = AcceptAllPointFilter()
 
         val ppp = PoissonPointProcess(
             segmentation = segmentation,
@@ -56,8 +56,9 @@ object ExampleFigureGeneration {
 
         val vietorisRipsComplex = VietorisRipsComplex(
             vertices = ppp.acceptedPoints.values.toList(),
-            metric = EuclideanMetric(),
-            delta = 0.75
+            distance = Metrics::squaredEuclidean,
+            delta = 0.75,
+            clusterExtension = 2
         )
 
         vietorisRipsComplex.calculateAdjacencyMatrix()
