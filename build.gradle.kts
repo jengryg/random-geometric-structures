@@ -17,7 +17,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.15")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
