@@ -1,7 +1,7 @@
 figures/*
 
 .idea
-
+.kotlin
 # ---------------------------------------------------------------------------------------------------------------------
 # Adjusted Spring Initializr default .gitignore below.
 # Add custom entries above this comment block.
