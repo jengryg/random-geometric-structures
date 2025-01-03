@@ -25,7 +25,7 @@ dependencies {
     implementation("org.apache.commons:commons-math3:3.6.1")
 
     implementation("org.apache.xmlgraphics:batik-svggen:1.17")
-    implementation("org.apache.xmlgraphics:batik-dom:1.17")
+    implementation("org.apache.xmlgraphics:batik-dom:1.18")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
