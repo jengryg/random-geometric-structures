@@ -39,7 +39,7 @@ dependencies {
 
     testImplementation("org.assertj:assertj-core:3.27.3")
 
-    testImplementation("io.mockk:mockk:1.13.14")
+    testImplementation("io.mockk:mockk:1.14.5")
 }
 
 kotlin {
