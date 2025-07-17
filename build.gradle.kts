@@ -29,7 +29,7 @@ dependencies {
 
     implementation("org.apache.xmlgraphics:batik-svggen:1.18")
 
-    implementation("org.apache.xmlgraphics:batik-dom:1.18")
+    implementation("org.apache.xmlgraphics:batik-dom:1.19")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
