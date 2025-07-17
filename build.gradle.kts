@@ -23,7 +23,7 @@ dependencies {
 
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
     implementation("org.apache.commons:commons-math3:3.6.1")
 
@@ -33,7 +33,7 @@ dependencies {
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
 
