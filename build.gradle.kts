@@ -14,10 +14,13 @@ repositories {
 
 dependencies {
     implementation("org.slf4j:slf4j-api:2.0.17")
+
     implementation("ch.qos.logback:logback-classic:1.5.15")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
+
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
+
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
@@ -25,6 +28,7 @@ dependencies {
     implementation("org.apache.commons:commons-math3:3.6.1")
 
     implementation("org.apache.xmlgraphics:batik-svggen:1.18")
+
     implementation("org.apache.xmlgraphics:batik-dom:1.18")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -32,7 +36,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+
     testImplementation("org.assertj:assertj-core:3.27.1")
+
     testImplementation("io.mockk:mockk:1.13.14")
 }
 
