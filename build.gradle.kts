@@ -19,7 +19,7 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
 
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
 
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
 
