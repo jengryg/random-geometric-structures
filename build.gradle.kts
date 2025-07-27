@@ -21,7 +21,7 @@ dependencies {
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
 
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
